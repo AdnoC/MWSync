@@ -1,0 +1,74 @@
+<project name="MWTool" basedir="." default="main">
+
+  <property name="lib.dir" value="libs"/>
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="bin"/>
+  <property name="main-class" value="APIClient"/>
+  <property name="jar.dir" value="jar"/>
+  
+  <path id="jars">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+</path>
+
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${jar.dir}"/>
+  </target>
+ 
+  <target name="compile">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" classpathref="jars" debug="on" classpath="${lib.dir}/gson-2.2.4.jar" destdir="${build.dir}" />
+  </target>
+
+  <path id="build.classpath">
+    <fileset dir="${basedir}/">
+      <include name="${lib.dir}/*.jar"/>
+    </fileset>
+  </path>
+
+  <pathconvert property="mf.classpath" pathsep=" ">
+    <path refid="build.classpath"/>
+    <mapper>
+      <chainedmapper>
+        <flattenmapper/>
+        <globmapper from="*.jar" to="${lib.dir}/*.jar"/>
+      </chainedmapper>
+    </mapper>
+  </pathconvert>
+
+  <target name="cp">
+    <echo>${mf.classpath}</echo>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${build.dir}" filesetmanifest="skip">
+      <fileset dir="${build.dir}" includes="*.java"/>
+      <zipgroupfileset dir="${lib.dir}" includes="*.jar" excludes=""/>
+
+    <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+        <attribute name="Class-Path" value="${mf.classpath}"/>
+    </manifest>
+    </jar>
+    <!--<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${build.dir}" filesetmanifest="skip">-->
+      <!--<fileset dir="${build.dir}" includes="*.java"/>-->
+      <!--<zipfileset dir="${lib.dir}" includes="*.jar" excludes=""/>-->
+      <!--<manifest>-->
+        <!--<attribute name="Main-Class" value="${main-class}"/>-->
+        <!--<attribute name="Class-Path" value="${mf.classpath}"/>-->
+      <!--</manifest>-->
+    <!--</jar>-->
+    
+  </target>
+
+  <target name="run" depends="jar">
+    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+  </target>
+
+  <target name="main" depends="clean,run"/>
+
+
+
+</project>
