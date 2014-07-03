@@ -19,9 +19,9 @@ public class APIClient {
 
         String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
         String key1 = "login";
-        String val1 = "adno4adno4@gmail.com";
+        String val1 = Config.USERNAME;
         String key2 = "pass";
-        String val2 = "";
+        String val2 = Config.PASSWORD;;
         // Construct data
         String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
         data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
