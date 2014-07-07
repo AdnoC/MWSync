@@ -20,11 +20,26 @@ public class APIClient {
     return GetMangas(0);
   }
   public static JsonElement GetMangas(int offset) {
+    JsonElement ret = null;
     try {
 
       String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
       String data = "";
-      urlStr = urlStr + "?" + data;
+      urlStr += "?";
+      String key1 = "login";
+      String val1 = Config.USERNAME;
+      String key2 = "pass";
+      String val2 = Config.PASSWORD;;
+
+      // Construct data
+      try {
+        data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
+        data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
+        data += "&" + URLEncoder.encode("offset", "UTF-8") + "=" + offset;
+      } catch(UnsupportedEncodingException uee) {
+        uee.printStackTrace();
+      }
+      urlStr += data;
 
       // Send data
       URL url = new URL(urlStr);
@@ -34,18 +49,12 @@ public class APIClient {
       // Get the response
       JsonParser parser = new JsonParser();
       InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-      JsonObject jObj = parser.parse(isr).getAsJsonObject();
-      JsonArray jArray = jObj.get("items").getAsJsonArray();
-
-      for(JsonElement el : jArray) {
-        new MWItem(el);
-      }
+      ret = parser.parse(isr);
     } catch (Exception e) {
       System.err.println("Error");
       e.printStackTrace();
     }
-    // @TODO: Return a value
-    return null;
+    return ret;
   }
   public static JsonElement MWRequest() {
     return null;
@@ -60,7 +69,7 @@ public class APIClient {
     String data = "";
     // Construct data
     try {
-    String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
+    data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
     data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
       } catch(UnsupportedEncodingException uee) {
         uee.printStackTrace();
@@ -79,6 +88,7 @@ public class APIClient {
   public static void main(String[] args) {
     try {
 
+      /*
         String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
         String key1 = "login";
         String val1 = Config.USERNAME;
@@ -101,11 +111,21 @@ public class APIClient {
         // Get the response
         JsonParser parser = new JsonParser();
         InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-        JsonObject jObj = parser.parse(isr).getAsJsonObject();
-        JsonArray jArray = jObj.get("items").getAsJsonArray();
+        JsonObject jObj = parser.parse(isr).getAsJsonObject();*/
+        int off = 0;
+        while(true){
+          JsonObject jObj =  GetMangas(off).getAsJsonObject();
+          int count = jObj.get("count").getAsInt();
+          if(count <= 0) {
+            break;
+          }
+          System.out.println("Offset = " + off);
+          JsonArray jArray = jObj.get("items").getAsJsonArray();
 
-        for(JsonElement el : jArray) {
-          new MWItem(el);
+          for(JsonElement el : jArray) {
+            System.out.println((new MWItem(el)).toString());
+          }
+          off += 20;
         }
     } catch (Exception e) {
       System.err.println("Error");

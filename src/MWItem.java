@@ -1,3 +1,6 @@
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -77,12 +80,81 @@ public class MWItem {
      *    chapter # at end of url
      * "http://www.mangapanda.com/94-485-1/bleach/chapter-31.html"
      *    Has 'chapter', a separator, then the #
+     * "http://mangafox.me/manga/binbougami_ga/v09/c039/1.html"
      * http://www.batoto.net/read/_/50800/amagoi_v2_by_idws-scans
      *    DOes not contain a chapter #
      */
-    int chLoc = link.lastIndexOf("chapter");
     final int CHAPTER_OFFSET = 7;
     final int CH_OFFSET = 2;
+    final int C_OFFSET = 1;
+    if(link.indexOf("batoto.net") != -1) {
+      int chLoc = link.lastIndexOf("ch");
+      if(chLoc != -1) {
+        for(int i = chLoc + CH_OFFSET; i < link.length(); i++) {
+          if(! Character.isDigit(link.charAt(i))) {
+            String chStr = link.substring(chLoc + CH_OFFSET, i);
+            //System.out.println("STR2: " + chStr);
+            try {
+              int chNum = Integer.parseInt(chStr);
+              return chNum;
+            } catch(NumberFormatException nfe) {
+
+            }
+          }
+        }
+      } else {
+        return 0;
+      }
+    } else if(link.indexOf("mangaeden.com") != -1) {
+      int chEnd = link.lastIndexOf('/', link.length()-3);
+      int chBegin = link.lastIndexOf('/', chEnd - 1)+1;
+      String chStr = link.substring(chBegin, chEnd);
+      try {
+        int chNum = Integer.parseInt(chStr);
+        return chNum;
+      } catch(NumberFormatException nfe) {
+
+      }
+    } else if(link.indexOf("mangapanda.com") != -1 || link.indexOf("sarkana.com") != -1 ||
+        link.indexOf("mangareader.net") != -1) {
+      int chLoc = link.lastIndexOf("chapter");
+      if(chLoc != -1) {
+        if(! Character.isDigit(link.charAt(chLoc + CHAPTER_OFFSET))) {
+          chLoc += 1;
+        }
+        for(int i = chLoc + CHAPTER_OFFSET; i < link.length(); i++) {
+          if(! Character.isDigit(link.charAt(i))) {
+            String chStr = link.substring(chLoc + CHAPTER_OFFSET, i);
+              //System.out.println("STR1: " + chStr);
+            try {
+              int chNum = Integer.parseInt(chStr);
+              return chNum;
+            } catch(NumberFormatException nfe) {
+
+            }
+          }
+        }
+      }
+    } else if(link.indexOf("mangafox.me") != -1) {
+      int chLoc = link.lastIndexOf("c");
+      if(chLoc != -1) {
+        for(int i = chLoc + C_OFFSET; i < link.length(); i++) {
+          if(! Character.isDigit(link.charAt(i))) {
+            String chStr = link.substring(chLoc + C_OFFSET, i);
+            try {
+              int chNum = Integer.parseInt(chStr);
+              return chNum;
+            } catch(NumberFormatException nfe) {
+
+            }
+          }
+        }
+      } else {
+        return 0;
+      }
+    }
+
+    int chLoc = link.lastIndexOf("chapter");
     if(chLoc != -1) {
       if(! Character.isDigit(link.charAt(chLoc + CHAPTER_OFFSET))) {
         chLoc += 1;
@@ -178,7 +250,13 @@ public class MWItem {
   }
   @Override
   public String toString() {
-    return title + " - " + lastRead;
+    String rTitle = "";
+    try {
+      rTitle = URLDecoder.decode(title, "UTF-8");
+    } catch(UnsupportedEncodingException uee) {
+      uee.printStackTrace();
+    }
+    return rTitle + " - " + lastRead;
   }
 
   // Data fields containing information about the manga.
