@@ -5,7 +5,7 @@
   <property name="build.dir" value="bin"/>
   <property name="main-class" value="APIClient"/>
   <property name="jar.dir" value="jar"/>
-  
+
   <path id="jars">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
 </path>
@@ -15,20 +15,20 @@
     <delete dir="${build.dir}"/>
     <delete dir="${jar.dir}"/>
   </target>
- 
+
   <target name="compile">
     <mkdir dir="${build.dir}"/>
     <javac srcdir="${src.dir}" classpathref="jars" debug="on" classpath="${lib.dir}/gson-2.2.4.jar" destdir="${build.dir}" />
   </target>
 
-  <path id="build.classpath">
+  <path id="lib.cp">
     <fileset dir="${basedir}/">
       <include name="${lib.dir}/*.jar"/>
     </fileset>
   </path>
 
-  <pathconvert property="mf.classpath" pathsep=" ">
-    <path refid="build.classpath"/>
+  <pathconvert property="lib.classpath">
+    <path refid="lib.cp"/>
     <mapper>
       <chainedmapper>
         <flattenmapper/>
@@ -38,7 +38,7 @@
   </pathconvert>
 
   <target name="cp">
-    <echo>${mf.classpath}</echo>
+    <echo>${lib.classpath};${src.dir}</echo>
   </target>
 
   <target name="jar" depends="compile">
@@ -60,7 +60,7 @@
         <!--<attribute name="Class-Path" value="${mf.classpath}"/>-->
       <!--</manifest>-->
     <!--</jar>-->
-    
+
   </target>
 
   <target name="run" depends="jar">
