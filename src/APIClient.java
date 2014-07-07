@@ -1,9 +1,11 @@
 import java.net.URLEncoder;
 import java.net.URL;
 import java.net.URLConnection;
+import java.io.UnsupportedEncodingException;
 import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 
@@ -14,6 +16,66 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 public class APIClient {
+  public static JsonElement GetMangas() {
+    return GetMangas(0);
+  }
+  public static JsonElement GetMangas(int offset) {
+    try {
+
+      String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
+      String data = "";
+      urlStr = urlStr + "?" + data;
+
+      // Send data
+      URL url = new URL(urlStr);
+      URLConnection conn = url.openConnection();
+      conn.setDoOutput(true);
+
+      // Get the response
+      JsonParser parser = new JsonParser();
+      InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+      JsonObject jObj = parser.parse(isr).getAsJsonObject();
+      JsonArray jArray = jObj.get("items").getAsJsonArray();
+
+      for(JsonElement el : jArray) {
+        new MWItem(el);
+      }
+    } catch (Exception e) {
+      System.err.println("Error");
+      e.printStackTrace();
+    }
+    // @TODO: Return a value
+    return null;
+  }
+  public static JsonElement MWRequest() {
+    return null;
+  }
+  public static JsonElement MWRequest(String url, HashMap<String, String> params) {
+    url += "?";
+    String key1 = "login";
+    String val1 = Config.USERNAME;
+    String key2 = "pass";
+    String val2 = Config.PASSWORD;;
+
+    String data = "";
+    // Construct data
+    try {
+    String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
+    data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
+      } catch(UnsupportedEncodingException uee) {
+        uee.printStackTrace();
+      }
+
+    for(Map.Entry<String, String> entry : params.entrySet()) {
+      try {
+        data += "&" + URLEncoder.encode(entry.getKey(), "UTF-8") + "=";
+        data += URLEncoder.encode(entry.getValue(), "UTF-8");
+      } catch(UnsupportedEncodingException uee) {
+        uee.printStackTrace();
+      }
+    }
+    return null;
+  }
   public static void main(String[] args) {
     try {
 
@@ -42,29 +104,9 @@ public class APIClient {
         JsonObject jObj = parser.parse(isr).getAsJsonObject();
         JsonArray jArray = jObj.get("items").getAsJsonArray();
 
-        //ArrayList<channelSearchEnum> lcs = new ArrayList<channelSearchEnum>();
-
-        JsonElement el1 = jArray.get(4);
-        System.out.println(java.util.Arrays.toString(el1.getAsJsonObject().entrySet().toArray()));
-        //JsonArray ar1 = el1.getAsJsonArray();
-        //for(JsonElement obj : ar1 )
-        //{
-          //System.out.println(obj.toString());
-            ////channelSearchEnum cse = gson.fromJson( obj , channelSearchEnum.class);
-            ////lcs.add(cse);
-        //}
-        //Map<String, String> map = new Gson().fromJson(new InputStreamReader(conn.getInputStream(), "UTF-8"), new TypeToken<Map<String, String>>(){}.getType());
-
-
-
-        //BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        //while ((line = rd.readLine()) != null) {
-            //// Process line...
-            //System.out.println(line);
-        //}
-        //wr.close();
-        //rd.close();
+        for(JsonElement el : jArray) {
+          new MWItem(el);
+        }
     } catch (Exception e) {
       System.err.println("Error");
       e.printStackTrace();
