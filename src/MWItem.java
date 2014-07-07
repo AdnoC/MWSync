@@ -1,6 +1,9 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+/**
+ * Data storage class that parses a Manga from MW API and stores its information.
+ */
 public class MWItem {
 /*
    {
@@ -40,13 +43,28 @@ public class MWItem {
             "date_long": 1350264894210
   },
 */
+  /**
+   * Constructor for MWItem.
+   * Convenience method that calls MWItem(JsonObject)
+   * @param jse
+   *  An Manga object from MW to parse.
+   */
   public MWItem(JsonElement jse) {
     this(jse.getAsJsonObject());
   }
   protected String stripString(String str) {
     return str.replaceAll("^\"|\"$", "");
   }
+  /**
+   * Parses a link to a chapter and returns the chapter number.
+   * @param link
+   *  The string containing the chapter URL.
+   * @return
+   *  An int of the number of the chapter.
+   */
   protected int getChapterFromLink(String link) {
+    //@TODO: Possibly map out what sites use what format and use different
+    //  algorithm depending on site.
     //System.out.println("Parsing " + link);
     //System.out.println("Last char " + link.charAt(link.length() - 2));
     /*
@@ -112,6 +130,11 @@ public class MWItem {
     }
     return 0;
   }
+  /**
+   * Constructor for MWItem.
+   * @param jso
+   *  An Manga object from MW to parse.
+   */
   public MWItem(JsonObject jso) {
     // Set fields that we usually have no problem with
     genre = jso.get("genre").toString();
@@ -157,6 +180,8 @@ public class MWItem {
   public String toString() {
     return title + " - " + lastRead;
   }
+
+  // Data fields containing information about the manga.
   public String genre;
   public int parserId;
   public int status;
@@ -175,6 +200,9 @@ public class MWItem {
   public long dateLong;
 
   public int lastRead = 0;
+  /**
+   * Extraneous class that is going to be removed.
+   */
   private class MWReaded {
     public String chash;
     public String hash;
