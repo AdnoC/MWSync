@@ -1,3 +1,6 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 public class MWItem {
 /*
    {
@@ -37,7 +40,122 @@ public class MWItem {
             "date_long": 1350264894210
   },
 */
-  public MWItem () {
+  public MWItem(JsonElement jse) {
+    this(jse.getAsJsonObject());
+  }
+  protected String stripString(String str) {
+    return str.replaceAll("^\"|\"$", "");
+  }
+  protected int getChapterFromLink(String link) {
+    //System.out.println("Parsing " + link);
+    //System.out.println("Last char " + link.charAt(link.length() - 2));
+    /*
+     * chapter styles:
+     * "http://www.mangaeden.com/en-manga/aragami-hime/2/1/"
+     *    At end of url chapter then volume
+     * "http://www.batoto.net/read/_/107406/asu-no-yoichi_ch7_by_franky-house",
+     *    Has 'ch' followed by chapter number
+     * "http://starkana.com/manga/F/Fairy_Tail/chapter/315"
+     *    chapter # at end of url
+     * "http://www.mangapanda.com/94-485-1/bleach/chapter-31.html"
+     *    Has 'chapter', a separator, then the #
+     * http://www.batoto.net/read/_/50800/amagoi_v2_by_idws-scans
+     *    DOes not contain a chapter #
+     */
+    int chLoc = link.lastIndexOf("chapter");
+    final int CHAPTER_OFFSET = 7;
+    final int CH_OFFSET = 2;
+    if(chLoc != -1) {
+      if(! Character.isDigit(link.charAt(chLoc + CHAPTER_OFFSET))) {
+        chLoc += 1;
+      }
+      for(int i = chLoc + CHAPTER_OFFSET; i < link.length(); i++) {
+        if(! Character.isDigit(link.charAt(i))) {
+          String chStr = link.substring(chLoc + CHAPTER_OFFSET, i);
+            //System.out.println("STR1: " + chStr);
+          try {
+            int chNum = Integer.parseInt(chStr);
+            return chNum;
+          } catch(NumberFormatException nfe) {
+
+          }
+        }
+      }
+    } else {
+      chLoc = link.lastIndexOf("ch");
+      if(chLoc != -1) {
+        for(int i = chLoc + CH_OFFSET; i < link.length(); i++) {
+          if(! Character.isDigit(link.charAt(i))) {
+            String chStr = link.substring(chLoc + CH_OFFSET, i);
+            //System.out.println("STR2: " + chStr);
+            try {
+              int chNum = Integer.parseInt(chStr);
+              return chNum;
+            } catch(NumberFormatException nfe) {
+
+            }
+          }
+        }
+      } else if(link.charAt(link.length() - 2) == '/'){
+        int chEnd = link.lastIndexOf('/', link.length()-3);
+        int chBegin = link.lastIndexOf('/', chEnd - 1)+1;
+        String chStr = link.substring(chBegin, chEnd);
+        System.out.println("STR3: " + chStr);
+        try {
+          int chNum = Integer.parseInt(chStr);
+          return chNum;
+        } catch(NumberFormatException nfe) {
+
+        }
+
+      }
+    }
+    return 0;
+  }
+  public MWItem(JsonObject jso) {
+    // Set fields that we usually have no problem with
+    genre = jso.get("genre").toString();
+    parserId = Integer.parseInt(stripString(jso.get("parser_id").toString()));
+    status = Integer.parseInt(stripString(jso.get("status").toString()));
+    hash = jso.get("hash").toString();
+    catalog = jso.get("catalog").toString();
+    readingDirection = Boolean.parseBoolean(jso.get("reading_direction").toString());
+    image = jso.get("image").toString();
+    mhash = jso.get("mhash").toString();
+    id = jso.get("id").toString();
+    author = jso.get("author").toString();
+    title = jso.get("title").toString();
+    uniq = jso.get("uniq").toString();
+    mature = Integer.parseInt(stripString(jso.get("mature").toString()));
+    rating = Integer.parseInt(stripString(jso.get("rating").toString()));
+
+    // Be more careful with fields that have been problematic
+    JsonElement tmpE = jso.get("ihash");
+    if(tmpE != null) {
+      ihash = jso.get("ihash").toString();
+    } else {
+      ihash = "";
+    }
+
+    // Get the number of the latest read chapter.
+    tmpE = jso.get("readed");
+    if(tmpE != null) {
+      JsonArray readed = tmpE.getAsJsonArray();
+      for(JsonElement arrEl : readed) {
+        JsonObject tmpO = arrEl.getAsJsonObject();
+        if(Boolean.parseBoolean(tmpO.get("is_read").toString())) {
+          int chapter = getChapterFromLink(tmpO.get("link").toString());
+          if(chapter > lastRead) {
+            lastRead = chapter;
+          }
+        }
+      }
+    }
+
+  }
+  @Override
+  public String toString() {
+    return title + " - " + lastRead;
   }
   public String genre;
   public int parserId;
@@ -56,6 +174,7 @@ public class MWItem {
   public int rating;
   public long dateLong;
 
+  public int lastRead = 0;
   private class MWReaded {
     public String chash;
     public String hash;
