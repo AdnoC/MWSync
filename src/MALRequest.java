@@ -13,16 +13,6 @@ import org.w3c.dom.Document;
 import java.util.HashMap;
 import java.util.Map;
 public class MALRequest {
-  protected String requestURL;
-  protected Map params;
-
-  public MALRequest(RequestType rType) {
-    this(RequestType.LOGIN);
-  }
-  public MALRequest(RequestType rType) {
-    setType(rType);
-  }
-
   /**
    * Requests that will be used:
    *  http://myanimelist.net/api/manga/search.xml
@@ -34,9 +24,23 @@ public class MALRequest {
    * http://myanimelist.net/api/account/verify_credentials.xml
    *   Verify account credentials
    */
+
+  protected String requestURL;
+  protected Map params;
+  protected RequestType type;
+
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH
   };
+
+  public MALRequest(RequestType rType) {
+    this(RequestType.LOGIN);
+  }
+  public MALRequest(RequestType rType) {
+    type = rType;
+    setType(rType);
+  }
+
   protected void addAuth(URLConnection uc) {
     String userpass = Config.MAL_USERNAME + ":" + Config.MAL_PASSWORD;
     String basicAuth = javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
@@ -63,6 +67,13 @@ public class MALRequest {
         break;
     }
   }
+  /**
+   * Clears all data for this request.
+   */
+  protected void clear() {
+    params = null;
+  }
+
   public Document request() {
       //String urlStr = "http://myanimelist.net/api/manga/search.xml?q=full+metal";
       String data = "";
@@ -99,7 +110,7 @@ public class MALRequest {
           System.out.println(str);
           str = br.readLine();
         }
-      }catch(Exception e){e.printStackTrace();}
+      } catch(Exception e){e.printStackTrace();}
       //@TODO: Make this return a value
       return null;
 
