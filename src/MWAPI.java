@@ -15,7 +15,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-public class APIClient {
+public class MWAPI {
   public static JsonElement GetMangas() {
     return GetMangas(0);
   }
@@ -27,9 +27,9 @@ public class APIClient {
       String data = "";
       urlStr += "?";
       String key1 = "login";
-      String val1 = Config.USERNAME;
+      String val1 = Config.MWUSERNAME;
       String key2 = "pass";
-      String val2 = Config.PASSWORD;;
+      String val2 = Config.MWPASSWORD;;
 
       // Construct data
       try {
@@ -62,9 +62,9 @@ public class APIClient {
   public static JsonElement MWRequest(String url, HashMap<String, String> params) {
     url += "?";
     String key1 = "login";
-    String val1 = Config.USERNAME;
+    String val1 = Config.MWUSERNAME;
     String key2 = "pass";
-    String val2 = Config.PASSWORD;;
+    String val2 = Config.MWPASSWORD;;
 
     String data = "";
     // Construct data
@@ -86,6 +86,9 @@ public class APIClient {
     return null;
   }
   public static void main(String[] args) {
+    new MALRequest();
+    if(1==1) {
+    return;}
     try {
 
       /*
@@ -119,7 +122,6 @@ public class APIClient {
           if(count <= 0) {
             break;
           }
-          System.out.println("Offset = " + off);
           JsonArray jArray = jObj.get("items").getAsJsonArray();
 
           for(JsonElement el : jArray) {

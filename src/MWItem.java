@@ -256,7 +256,7 @@ public class MWItem {
     } catch(UnsupportedEncodingException uee) {
       uee.printStackTrace();
     }
-    return rTitle + " - " + lastRead;
+    return rTitle + " - " + lastRead + " :: " + id;
   }
 
   // Data fields containing information about the manga.

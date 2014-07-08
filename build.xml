@@ -3,7 +3,7 @@
   <property name="lib.dir" value="libs"/>
   <property name="src.dir" value="src"/>
   <property name="build.dir" value="bin"/>
-  <property name="main-class" value="APIClient"/>
+  <property name="main-class" value="MWAPI"/>
   <property name="jar.dir" value="jar"/>
 
   <path id="jars">

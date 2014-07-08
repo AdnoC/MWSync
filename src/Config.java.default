@@ -1,4 +1,6 @@
 public class Config {
-  public static final String USERNAME = "";
-  public static final String PASSWORD = MD5Gen.encryptPass(USERNAME, "");
+  public static final String MWUSERNAME = "";
+  public static final String MWPASSWORD = MD5Gen.encryptPass(USERNAME, "");
+  public static final String MAL_USERNAME = "";
+  public static final String MAL_PASSWORD = "";
 }
