@@ -11,6 +11,8 @@ import org.w3c.dom.Document;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
@@ -34,20 +36,36 @@ public class MALRequest {
   protected Map<String, String> params;
   protected RequestType type;
   protected Document document;
+  protected boolean[] auth = new boolean[2];
 
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH;
 
+    protected String[] requiredParams() {
+      switch(this) {
+        case LOGIN:
+          return new String[0];
+        case ADD:
+          return new String[]{ "id", "data" };
+        case UPDATE:
+          return new String[]{ "id", "data" };
+        case SEARCH:
+          return new String[]{ "q" };
+        default:
+          return new String[0];
+      }
+
+    }
     protected String getURL() {
       switch(this) {
         case LOGIN:
           return  "http://myanimelist.net/api/account/verify_credentials.xml";
         case ADD:
-          return "";
+          return "http://myanimelist.net/api/mangalist/add/id.xml";
         case UPDATE:
-          return "";
+          return "http://myanimelist.net/api/animelist/update/id.xml";
         case SEARCH:
-          return "";
+          return "http://myanimelist.net/api/manga/search.xml";
         default:
           return "";
       }
@@ -73,6 +91,17 @@ public class MALRequest {
       return null;
     }
     return params.remove(key);
+  }
+
+  protected String getFinalURL() {
+    String ret = requestURL;
+    if(requestURL.indexOf("id") != -1 && params != null && params.containsKey("id")) {
+      ret = ret.replaceAll("id", params.get("id"));
+    }
+    if(params != null && !params.isEmpty()) {
+      ret += "?" +  Utils.buildParamsFromMap(params);
+    }
+    return ret;
   }
 
 
@@ -107,48 +136,53 @@ public class MALRequest {
       return document;
     }
   }
-  public Document request() {
-      String urlStr = requestURL;
-      if(params != null && !params.isEmpty()) {
-        String data = Utils.buildParamsFromMap(params);
-        urlStr += "?" + data;
-      }
+  public Document request() throws BadRequestParamsException {
+    if(! canRequest()) {
+      ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
+      req.removeAll(params.keySet());
+      throw new BadRequestParamsException(req.toArray(new String[req.size()]));
+    }
+    String urlStr = requestURL;
+    if(params != null && !params.isEmpty()) {
+      String data = Utils.buildParamsFromMap(params);
+      urlStr += "?" + data;
+    }
 
-      // Send data
-      try{
-        URL url = new URL(urlStr);
-        HttpURLConnection conn = null;
-        try {
-          conn = (HttpURLConnection) url.openConnection();
-          addAuth(conn);
-          conn.setDoOutput(true);
+    // Send data
+    try{
+      URL url = new URL(urlStr);
+      HttpURLConnection conn = null;
+      try {
+        conn = (HttpURLConnection) url.openConnection();
+        addAuth(conn);
+        conn.setDoOutput(true);
 
-          try{
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            try {
-              Document dom = builder.parse(conn.getInputStream());
-              this.document = dom;
-              return dom;
-            } catch(SAXException saxe) {
-              saxe.printStackTrace();
-            }
-          } catch(ParserConfigurationException pce) {
-            pce.printStackTrace();
+        try{
+          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+          DocumentBuilder builder = factory.newDocumentBuilder();
+          try {
+            Document dom = builder.parse(conn.getInputStream());
+            this.document = dom;
+            return dom;
+          } catch(SAXException saxe) {
+            saxe.printStackTrace();
           }
-
-        } catch(IOException ioe) {
-          ioe.printStackTrace();
-        } finally {
-          if(conn != null) {
-            conn.disconnect();
-          }
+        } catch(ParserConfigurationException pce) {
+          pce.printStackTrace();
         }
-      } catch(MalformedURLException mue) {
-        mue.printStackTrace();
+
+      } catch(IOException ioe) {
+        ioe.printStackTrace();
+      } finally {
+        if(conn != null) {
+          conn.disconnect();
+        }
       }
-      //@TODO: Make this return a value
-      return null;
+    } catch(MalformedURLException mue) {
+      mue.printStackTrace();
+    }
+    //@TODO: Make this return a value
+    return null;
   }
           //InputStreamReader isr = new InputStreamReader(conn.getInputStream());
           ////Get the response
@@ -158,23 +192,39 @@ public class MALRequest {
             //System.out.println(str);
             //str = br.readLine();
           //}
-  public boolean isAuthorized() {
-    String urlStr = "";
-      try{
-        URL url = new URL(urlStr);
-        try {
-          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-          addAuth(conn);
-          conn.setDoOutput(true);
-          System.out.println(conn.getResponseCode());
-          conn.disconnect();
-        } catch(IOException ioe) {
-          ioe.printStackTrace();
-        }
-      } catch(MalformedURLException mue) {
-        mue.printStackTrace();
+  public boolean canRequest() {
+    for(String param : this.type.requiredParams()) {
+      if(! params.containsKey(param)) {
+        return false;
       }
-    return false;
+    }
+    return true;
+  }
+  public boolean isAuthorized() {
+    // Set a cache of whether we are authorized so we don't have to make multiple
+    // requests for authorization.
+    if(auth[0]) {
+      return auth[1];
+    }
+    int response = 401;
+    try{
+      String urlStr = RequestType.LOGIN.getURL();
+      URL url = new URL(urlStr);
+      try {
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        addAuth(conn);
+        conn.setDoOutput(true);
+
+        response = conn.getResponseCode();
+
+        conn.disconnect();
+      } catch(IOException ioe) {
+        ioe.printStackTrace();
+      }
+    } catch(MalformedURLException mue) {
+      mue.printStackTrace();
+    }
+    return response == 200;
 
   }
 }
