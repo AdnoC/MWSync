@@ -126,6 +126,7 @@ public class MALRequest {
    * Clears all data for this request.
    */
   protected void clear() {
+    document = null;
     params = null;
   }
 
@@ -184,14 +185,6 @@ public class MALRequest {
     //@TODO: Make this return a value
     return null;
   }
-          //InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-          ////Get the response
-          //BufferedReader br = new BufferedReader(isr);
-          //String str = br.readLine();
-          //while(str != null && !str.equals("")) {
-            //System.out.println(str);
-            //str = br.readLine();
-          //}
   public boolean canRequest() {
     for(String param : this.type.requiredParams()) {
       if(! params.containsKey(param)) {
@@ -199,6 +192,10 @@ public class MALRequest {
       }
     }
     return true;
+  }
+
+  public void resetAuth() {
+    this.auth = new boolean[2];
   }
   public boolean isAuthorized() {
     // Set a cache of whether we are authorized so we don't have to make multiple
