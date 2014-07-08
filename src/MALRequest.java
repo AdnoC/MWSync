@@ -1,3 +1,4 @@
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URL;
@@ -8,7 +9,19 @@ import java.io.InputStreamReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+
+import java.util.HashMap;
+import java.util.Map;
 public class MALRequest {
+  protected String requestURL;
+  protected Map params;
+
+  public MALRequest(RequestType rType) {
+    this(RequestType.LOGIN);
+  }
+  public MALRequest(RequestType rType) {
+    setType(rType);
+  }
 
   /**
    * Requests that will be used:
@@ -21,20 +34,40 @@ public class MALRequest {
    * http://myanimelist.net/api/account/verify_credentials.xml
    *   Verify account credentials
    */
-  //public Enum REQUEST_TYPE {
-  //}
+  public enum RequestType {
+    LOGIN, ADD, UPDATE, SEARCH
+  };
   protected void addAuth(URLConnection uc) {
     String userpass = Config.MAL_USERNAME + ":" + Config.MAL_PASSWORD;
-    String encoding = new sun.misc.BASE64Encoder().encode(userpass.getBytes());
-    uc.setRequestProperty("Authorization", "Basic " + encoding);
+    String basicAuth = javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+
+    uc.setRequestProperty("Authorization", "Basic " + basicAuth);
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
     uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
     //uc.setRequestProperty("http.agent", "MWSync");
   }
-  public MALRequest() {
+  public void changeType(RequestType rType) {
+    clear();
+    setType(rType);
+  }
+  protected void setType(RequestType rType) {
+    switch(rType) {
+      case LOGIN:
+        requestURL = "http://myanimelist.net/api/account/verify_credentials.xml";
+        break;
+      case ADD:
+        break;
+      case UPDATE:
+        break;
+      case SEARCH:
+        break;
+    }
+  }
+  public Document request() {
       //String urlStr = "http://myanimelist.net/api/manga/search.xml?q=full+metal";
-      String urlStr = "http://myanimelist.net/api/account/verify_credentials.xml";
       String data = "";
+      String urlStr = requestURL;
+      System.out.println("Request");
 
       // Construct data
       //try {
@@ -47,25 +80,32 @@ public class MALRequest {
 
       // Send data
       try{
-      URL url = new URL(urlStr);
-      URLConnection conn = url.openConnection();
-      addAuth(conn);
-      conn.setDoOutput(true);
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        addAuth(conn);
+        conn.setDoOutput(true);
+        //System.out.println(conn.getResponseCode());
 
 
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document dom = builder.parse(conn.getInputStream());
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        //Document dom = builder.parse(conn.getInputStream());
 
-      InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-      //Get the response
-      BufferedReader br = new BufferedReader(isr);
-      String str = br.readLine();
-      while(str != null && !str.equals("")) {
-        System.out.println(str);
-      str = br.readLine();
-      }
+        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+        //Get the response
+        BufferedReader br = new BufferedReader(isr);
+        String str = br.readLine();
+        while(str != null && !str.equals("")) {
+          System.out.println(str);
+          str = br.readLine();
+        }
       }catch(Exception e){e.printStackTrace();}
+      //@TODO: Make this return a value
+      return null;
+
+  }
+  public boolean isAuthorized() {
+    return false;
 
   }
 }

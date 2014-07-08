@@ -16,6 +16,58 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 public class MWAPI {
+  public static void main(String[] args) {
+    MALRequest malr = new MALRequest(MALRequest.RequestType.LOGIN);
+    malr.request();
+
+    if(1==1) {
+    return;}
+    try {
+
+      /*
+        String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
+        String key1 = "login";
+        String val1 = Config.USERNAME;
+        String key2 = "pass";
+        String val2 = Config.PASSWORD;;
+        // Construct data
+        String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
+        data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
+        urlStr = urlStr + "?" + data;
+
+
+        // Send data
+        URL url = new URL(urlStr);
+        URLConnection conn = url.openConnection();
+        conn.setDoOutput(true);
+        //OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        //wr.write(data);
+        //wr.flush();
+
+        // Get the response
+        JsonParser parser = new JsonParser();
+        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+        JsonObject jObj = parser.parse(isr).getAsJsonObject();*/
+        int off = 0;
+        while(true){
+          JsonObject jObj =  GetMangas(off).getAsJsonObject();
+          int count = jObj.get("count").getAsInt();
+          if(count <= 0) {
+            break;
+          }
+          JsonArray jArray = jObj.get("items").getAsJsonArray();
+
+          for(JsonElement el : jArray) {
+            System.out.println((new MWItem(el)).toString());
+          }
+          off += 20;
+        }
+    } catch (Exception e) {
+      System.err.println("Error");
+      e.printStackTrace();
+    }
+  }
+
   public static JsonElement GetMangas() {
     return GetMangas(0);
   }
@@ -84,54 +136,5 @@ public class MWAPI {
       }
     }
     return null;
-  }
-  public static void main(String[] args) {
-    new MALRequest();
-    if(1==1) {
-    return;}
-    try {
-
-      /*
-        String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
-        String key1 = "login";
-        String val1 = Config.USERNAME;
-        String key2 = "pass";
-        String val2 = Config.PASSWORD;;
-        // Construct data
-        String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
-        data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
-        urlStr = urlStr + "?" + data;
-
-
-        // Send data
-        URL url = new URL(urlStr);
-        URLConnection conn = url.openConnection();
-        conn.setDoOutput(true);
-        //OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        //wr.write(data);
-        //wr.flush();
-
-        // Get the response
-        JsonParser parser = new JsonParser();
-        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-        JsonObject jObj = parser.parse(isr).getAsJsonObject();*/
-        int off = 0;
-        while(true){
-          JsonObject jObj =  GetMangas(off).getAsJsonObject();
-          int count = jObj.get("count").getAsInt();
-          if(count <= 0) {
-            break;
-          }
-          JsonArray jArray = jObj.get("items").getAsJsonArray();
-
-          for(JsonElement el : jArray) {
-            System.out.println((new MWItem(el)).toString());
-          }
-          off += 20;
-        }
-    } catch (Exception e) {
-      System.err.println("Error");
-      e.printStackTrace();
-    }
   }
 }
