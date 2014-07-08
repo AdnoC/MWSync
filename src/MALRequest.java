@@ -5,6 +5,7 @@ import java.net.URL;
 import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -21,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 public class MALRequest {
   /**
+   * NOTE: Mangas need to be added to the list before they can be updated
+   *
    * Requests that will be used:
    *  http://myanimelist.net/api/manga/search.xml
    *   Search Manga
@@ -63,7 +66,7 @@ public class MALRequest {
         case ADD:
           return "http://myanimelist.net/api/mangalist/add/id.xml";
         case UPDATE:
-          return "http://myanimelist.net/api/animelist/update/id.xml";
+          return "http://myanimelist.net/api/mangalist/update/id.xml";
         case SEARCH:
           return "http://myanimelist.net/api/manga/search.xml";
         default:
@@ -132,22 +135,57 @@ public class MALRequest {
 
   public Document getDocument() {
     if(document == null) {
-      return request();
+      return requestDocument();
     } else {
       return document;
     }
   }
-  public Document request() throws BadRequestParamsException {
+  public String requestString() {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(request()));
+    StringBuilder builder = new StringBuilder();
+    String aux = "";
+
+    try{
+      while ((aux = reader.readLine()) != null) {
+          builder.append(aux);
+      }
+    } catch(IOException ioe) {
+      ioe.printStackTrace();
+    }
+
+    return builder.toString();
+  }
+  public Document requestDocument(){
+    try{
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      try {
+        Document dom = builder.parse(request());
+        this.document = dom;
+        return dom;
+      } catch(SAXException saxe) {
+        saxe.printStackTrace();
+      } catch(IOException ioe) {
+        ioe.printStackTrace();
+      }
+    } catch(ParserConfigurationException pce) {
+      pce.printStackTrace();
+    }
+    return null;
+  }
+  public InputStream request() throws BadRequestParamsException {
     if(! canRequest()) {
       ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
       req.removeAll(params.keySet());
       throw new BadRequestParamsException(req.toArray(new String[req.size()]));
     }
-    String urlStr = requestURL;
-    if(params != null && !params.isEmpty()) {
-      String data = Utils.buildParamsFromMap(params);
-      urlStr += "?" + data;
-    }
+    //String urlStr = requestURL;
+    //if(params != null && !params.isEmpty()) {
+      //String data = Utils.buildParamsFromMap(params);
+      //urlStr += "?" + data;
+    //}
+    String urlStr = getFinalURL();
+    System.out.println("URL: " + urlStr);
 
     // Send data
     try{
@@ -157,27 +195,11 @@ public class MALRequest {
         conn = (HttpURLConnection) url.openConnection();
         addAuth(conn);
         conn.setDoOutput(true);
+        return conn.getInputStream();
 
-        try{
-          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder builder = factory.newDocumentBuilder();
-          try {
-            Document dom = builder.parse(conn.getInputStream());
-            this.document = dom;
-            return dom;
-          } catch(SAXException saxe) {
-            saxe.printStackTrace();
-          }
-        } catch(ParserConfigurationException pce) {
-          pce.printStackTrace();
-        }
 
       } catch(IOException ioe) {
         ioe.printStackTrace();
-      } finally {
-        if(conn != null) {
-          conn.disconnect();
-        }
       }
     } catch(MalformedURLException mue) {
       mue.printStackTrace();

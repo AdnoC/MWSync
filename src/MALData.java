@@ -1,27 +1,26 @@
 import java.util.HashMap;
-public class MALData {
-  HashMap<String, String> data;
-  public void initData() {
-    data.put("chapter", "");
-    data.put("volume", "");
-    data.put("status", "");
-    data.put("score", "");
-    data.put("downloaded_chapters", "");
-    data.put("times_reread", "");
-    data.put("reread_value", "");
-    data.put("date_start", "");
-    data.put("date_finish", "");
-    data.put("priority", "");
-    data.put("enable_discussion", "");
-    data.put("enable_rereading", "");
-    data.put("comments", "");
-    data.put("scan_group", "");
-    data.put("tags", "");
-    data.put("retail_volumes", "");
-  }
+import java.util.Map;
+public class MALData extends HashMap<String, String> {
+  private static final long serialVersionUID = 5438579298L;
+
   public MALData() {
 
   }
+
+  @Override
+  public String toString() {
+    StringBuilder ret = new StringBuilder();
+    ret.append("<entry>");
+    for(Map.Entry<String, String> entry : this.entrySet()) {
+      ret.append("<" + entry.getKey() + ">");
+      ret.append(entry.getValue());
+      ret.append("</" + entry.getKey() + ">");
+    }
+    ret.append("</entry>");
+    return ret.toString();
+  }
+
+
   /*
     <?xml version="1.0" encoding="UTF-8"?>
       <entry>

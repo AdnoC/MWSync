@@ -17,9 +17,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 public class MWAPI {
   public static void main(String[] args) {
-    MALRequest malr = new MALRequest(MALRequest.RequestType.LOGIN);
-    malr.request();
+    testUpdate();
+  }
+  private static void testUpdate() {
+    MALRequest malr = new MALRequest(MALRequest.RequestType.UPDATE);
+    malr.addParam("id", "8456");
+    MALData mald = new MALData();
+    mald.put("status", "1");
+    mald.put("chapter", "1");
+    malr.addParam("data", mald.toString());
+    System.out.println(malr.requestString());
 
+  }
+  private void oldMain(){
     if(1==1) {
     return;}
     try {
