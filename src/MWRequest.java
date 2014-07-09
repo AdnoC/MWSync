@@ -20,92 +20,31 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
-public class MWAPI {
-  public static void main(String[] args) {
-    //testUpdate();
-    testSearch();
-  }
-  private static void testSearch() {
-    MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
-    String title = "witch hunter";
-    malr.addParam("q", title);
-    Document doc = malr.requestDocument();
-    NodeList nl = doc.getElementsByTagName("title");
-    for(int i = 0; i < nl.getLength(); i++) {
-      Node nd = nl.item(i);
-      String nTitle = nd.getTextContent();
-      System.out.println(nTitle);
-      if(nTitle.equalsIgnoreCase(title)) {
-        Element el1 = (Element) nd.getParentNode();
-        Node ndid = el1.getElementsByTagName("id").item(0);
-        System.out.println(ndid.getNodeName() + " :: " + ndid.getTextContent());
-      }
-    }
-  }
+public class MWRequest {
 
-  private static void testUpdate() {
-    MALRequest malr = new MALRequest(MALRequest.RequestType.UPDATE);
-    malr.addParam("id", "8456");
-    MALData mald = new MALData();
-    mald.put("status", "1");
-    mald.put("chapter", "1");
-    malr.addParam("data", mald.toString());
-    System.out.println(malr.requestString());
-
-  }
-  private void oldMain(){
-    if(1==1) {
-    return;}
+  public ArrayList<MWItem> getMangas(int offset) {
+    ArrayList<MWItem> mwItems = new ArrayList<MWItem>();
     try {
 
-      /*
-        String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
-        String key1 = "login";
-        String val1 = Config.USERNAME;
-        String key2 = "pass";
-        String val2 = Config.PASSWORD;;
-        // Construct data
-        String data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
-        data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
-        urlStr = urlStr + "?" + data;
+      JsonObject jObj =  getMangasJson(offset).getAsJsonObject();
+      int count = jObj.get("count").getAsInt();
+      if(count > 0) {
+        JsonArray jArray = jObj.get("items").getAsJsonArray();
 
-
-        // Send data
-        URL url = new URL(urlStr);
-        URLConnection conn = url.openConnection();
-        conn.setDoOutput(true);
-        //OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        //wr.write(data);
-        //wr.flush();
-
-        // Get the response
-        JsonParser parser = new JsonParser();
-        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-        JsonObject jObj = parser.parse(isr).getAsJsonObject();*/
-        int off = 0;
-        while(true){
-          JsonObject jObj =  GetMangas(off).getAsJsonObject();
-          int count = jObj.get("count").getAsInt();
-          if(count <= 0) {
-            break;
-          }
-          JsonArray jArray = jObj.get("items").getAsJsonArray();
-
-          for(JsonElement el : jArray) {
-            System.out.println((new MWItem(el)).toString());
-          }
-          off += 20;
+        for(JsonElement el : jArray) {
+          mwItems.add(new MWItem(el));
         }
+      }
     } catch (Exception e) {
       System.err.println("Error");
       e.printStackTrace();
     }
+    return mwItems;
   }
-
-  public static JsonElement GetMangas() {
-    return GetMangas(0);
+  public static JsonElement getMangasJson() {
+    return getMangasJson(0);
   }
-  public static JsonElement GetMangas(int offset) {
+  public static JsonElement getMangasJson(int offset) {
     JsonElement ret = null;
     try {
 
@@ -170,5 +109,28 @@ public class MWAPI {
       }
     }
     return null;
+  }
+  private void printAllMangas(){
+    if(1==1) {
+    return;}
+    try {
+        int off = 0;
+        while(true){
+          JsonObject jObj =  getMangasJson(off).getAsJsonObject();
+          int count = jObj.get("count").getAsInt();
+          if(count <= 0) {
+            break;
+          }
+          JsonArray jArray = jObj.get("items").getAsJsonArray();
+
+          for(JsonElement el : jArray) {
+            System.out.println((new MWItem(el)).toString());
+          }
+          off += 20;
+        }
+    } catch (Exception e) {
+      System.err.println("Error");
+      e.printStackTrace();
+    }
   }
 }

@@ -2,8 +2,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
-public class MALController {
-  public void updateManga(String id, String chapter) {
+public class MALClient {
+  public boolean updateManga(String id, String chapter) {
     addManga(id);
     MALRequest malr = new MALRequest(MALRequest.RequestType.UPDATE);
     malr.addParam("id", id);
@@ -11,7 +11,8 @@ public class MALController {
     mald.put("status", "1");
     mald.put("chapter", chapter);
     malr.addParam("data", mald.toString());
-    malr.requestString();
+    String response = malr.requestString();
+    return response.equals("Updated");
   }
   public void addManga(String id) {
     MALRequest malr = new MALRequest(MALRequest.RequestType.ADD);

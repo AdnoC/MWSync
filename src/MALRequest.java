@@ -39,7 +39,7 @@ public class MALRequest {
   protected Map<String, String> params;
   protected RequestType type;
   protected Document document;
-  protected boolean[] auth = new boolean[2];
+  protected static boolean[] auth = new boolean[2];
 
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH;
@@ -96,7 +96,7 @@ public class MALRequest {
     return params.remove(key);
   }
 
-  protected String getFinalURL() {
+  protected String getRequestURL() {
     String ret = requestURL;
     if(requestURL.indexOf("id") != -1 && params != null && params.containsKey("id")) {
       ret = ret.replaceAll("id", params.get("id"));
@@ -184,7 +184,7 @@ public class MALRequest {
       //String data = Utils.buildParamsFromMap(params);
       //urlStr += "?" + data;
     //}
-    String urlStr = getFinalURL();
+    String urlStr = getRequestURL();
     System.out.println("URL: " + urlStr);
 
     // Send data
@@ -217,13 +217,13 @@ public class MALRequest {
   }
 
   public void resetAuth() {
-    this.auth = new boolean[2];
+    MALRequest.auth = new boolean[2];
   }
   public boolean isAuthorized() {
     // Set a cache of whether we are authorized so we don't have to make multiple
     // requests for authorization.
-    if(auth[0]) {
-      return auth[1];
+    if(MALRequest.auth[0]) {
+      return MALRequest.auth[1];
     }
     int response = 401;
     try{
