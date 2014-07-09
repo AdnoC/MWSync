@@ -15,10 +15,34 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
 public class MWAPI {
   public static void main(String[] args) {
-    testUpdate();
+    //testUpdate();
+    testSearch();
   }
+  private static void testSearch() {
+    MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
+    String title = "witch hunter";
+    malr.addParam("q", title);
+    Document doc = malr.requestDocument();
+    NodeList nl = doc.getElementsByTagName("title");
+    for(int i = 0; i < nl.getLength(); i++) {
+      Node nd = nl.item(i);
+      String nTitle = nd.getTextContent();
+      System.out.println(nTitle);
+      if(nTitle.equalsIgnoreCase(title)) {
+        Element el1 = (Element) nd.getParentNode();
+        Node ndid = el1.getElementsByTagName("id").item(0);
+        System.out.println(ndid.getNodeName() + " :: " + ndid.getTextContent());
+      }
+    }
+  }
+
   private static void testUpdate() {
     MALRequest malr = new MALRequest(MALRequest.RequestType.UPDATE);
     malr.addParam("id", "8456");
