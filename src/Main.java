@@ -24,16 +24,27 @@ public class Main {
 
   public static void main(String[] args) {
     //test();
-    java.io.Console console = System.console();
-    if (console != null) {
-        console.format("Interactive Console Environment");
-    } else if (!java.awt.GraphicsEnvironment.isHeadless()) {
-        javax.swing.JOptionPane.showMessageDialog(null, "GUI Environment");
-    }
-    //System.out.println(java.awt.GraphicsEnvironment.isHeadless());
+    new Main();
   }
 
+  public Main() {
+    UserInterface ui = getUI();
+    Controller control = new Controller();
+    ui.registerController(control);
+  }
 
+  /**
+   * Returns the appropriate subclass of UI for the environment
+   * @return a GUI or command line UI.
+   */
+  public UserInterface getUI() {
+    //@TODO: return valid ui objects after I make the classes.
+    if(Utils.isGUI()) {
+      return null;
+    } else {
+      return null;
+    }
+  }
 
   public static void test() {
     //testUpdate();

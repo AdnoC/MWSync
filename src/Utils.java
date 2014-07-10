@@ -48,4 +48,14 @@ public class Utils {
     transformer.transform(new DOMSource(doc), 
          new StreamResult(new OutputStreamWriter(out, "UTF-8")));
   }
+  public static boolean isGUI() {
+    return (System.console() == null)
+    //if (System.console() != null) {
+        //console.format("Interactive Console Environment");
+    //} else if (!java.awt.GraphicsEnvironment.isHeadless()) {
+        //javax.swing.JOptionPane.showMessageDialog(null, "GUI Environment");
+    //} else {
+      //"There is no way to have interactions";
+    //}
+  }
 }
