@@ -52,9 +52,9 @@ public class MWRequest {
       String data = "";
       urlStr += "?";
       String key1 = "login";
-      String val1 = Config.MWUSERNAME;
+      String val1 = Config.MW_USERNAME;
       String key2 = "pass";
-      String val2 = Config.MWPASSWORD;;
+      String val2 = Config.MW_PASSWORD;;
 
       // Construct data
       try {
@@ -87,9 +87,9 @@ public class MWRequest {
   public static JsonElement MWRequest(String url, HashMap<String, String> params) {
     url += "?";
     String key1 = "login";
-    String val1 = Config.MWUSERNAME;
+    String val1 = Config.MW_USERNAME;
     String key2 = "pass";
-    String val2 = Config.MWPASSWORD;;
+    String val2 = Config.MW_PASSWORD;;
 
     String data = "";
     // Construct data
