@@ -24,7 +24,12 @@ public class Main {
 
   public static void main(String[] args) {
     //test();
-    System.out.println(System.console() == null);
+    java.io.Console console = System.console();
+    if (console != null) {
+        console.format("Interactive Console Environment");
+    } else if (!java.awt.GraphicsEnvironment.isHeadless()) {
+        javax.swing.JOptionPane.showMessageDialog(null, "GUI Environment");
+    }
     //System.out.println(java.awt.GraphicsEnvironment.isHeadless());
   }
 
