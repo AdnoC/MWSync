@@ -13,9 +13,9 @@ public class Model {
     MALRequest.setAuth(user, pass);
     ControlEvent ce;
     if(MALRequest.isAuthorized()) {
-      ce = new ControlEvent(Controller.ControlAction.CORRECT_MAL_LOGIN, null);
+      ce = new ControlEvent(ControlAction.CORRECT_MAL_LOGIN, null);
     } else {
-      ce = new ControlEvent(Controller.ControlAction.INCORRECT_MAL_LOGIN, null);
+      ce = new ControlEvent(ControlAction.INCORRECT_MAL_LOGIN, null);
     }
     control.fireEvent(ce);
   }
@@ -23,9 +23,9 @@ public class Model {
     MWRequest.setAuth(user, pass);
     ControlEvent ce;
     if(MWRequest.isAuthorized()) {
-      ce = new ControlEvent(Controller.ControlAction.CORRECT_MW_LOGIN, null);
+      ce = new ControlEvent(ControlAction.CORRECT_MW_LOGIN, null);
     } else {
-      ce = new ControlEvent(Controller.ControlAction.INCORRECT_MW_LOGIN, null);
+      ce = new ControlEvent(ControlAction.INCORRECT_MW_LOGIN, null);
     }
     control.fireEvent(ce);
   }

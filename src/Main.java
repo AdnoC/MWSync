@@ -36,7 +36,7 @@ public class Main {
 
     loginDets.add(Config.MW_USERNAME);
     loginDets.add(Config.MW_PASSWORD);
-    control.fireEvent(new ControlEvent(Controller.ControlAction.MW_LOGIN_INPUT, loginDets));
+    control.fireEvent(new ControlEvent(ControlAction.MW_LOGIN_INPUT, loginDets));
     //ui.registerController(control);
 
   }
