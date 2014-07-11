@@ -77,7 +77,6 @@ public class Model {
       @SuppressWarnings("unchecked")
       public void fireEvent(ControlEvent ce) {
         switch(ce.getMessage()) {
-    //SEARCH_MANGA
           case MAL_LOGIN_INPUT: {
             ArrayList<String> loginDetails = (ArrayList<String>) ce.getData();
             setMALLogin(loginDetails.get(0), loginDetails.get(1));

@@ -24,7 +24,8 @@ public class Main {
 
   public static void main(String[] args) {
     //test();
-    new Main();
+    //new Main();
+    new CLI();
   }
 
   public Main() {

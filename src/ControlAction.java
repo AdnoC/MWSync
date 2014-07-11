@@ -31,6 +31,4 @@
     TRANSFER_MANGA,
     // A search result was chosen as a match, even if the result was nothing
     SEARCH_RESULT_SELECTED,
-    // Should this be in here? It is a Model action and isn't controlled by the View.
-    SEARCH_MANGA
   };
