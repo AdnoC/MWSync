@@ -28,9 +28,17 @@ public class Main {
   }
 
   public Main() {
-    UserInterface ui = getUI();
+    //UserInterface ui = getUI();
     Controller control = new Controller();
-    ui.registerController(control);
+    Model mod = new Model();
+    mod.registerController(control);
+    ArrayList<String> loginDets = new ArrayList<String>();
+
+    loginDets.add(Config.MW_USERNAME);
+    loginDets.add(Config.MW_PASSWORD);
+    control.fireEvent(new ControlEvent(Controller.ControlAction.MW_LOGIN_INPUT, loginDets));
+    //ui.registerController(control);
+
   }
 
   /**

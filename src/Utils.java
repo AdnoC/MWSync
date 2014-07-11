@@ -49,7 +49,7 @@ public class Utils {
          new StreamResult(new OutputStreamWriter(out, "UTF-8")));
   }
   public static boolean isGUI() {
-    return (System.console() == null)
+    return (System.console() == null);
     //if (System.console() != null) {
         //console.format("Interactive Console Environment");
     //} else if (!java.awt.GraphicsEnvironment.isHeadless()) {

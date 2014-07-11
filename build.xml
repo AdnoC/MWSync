@@ -18,7 +18,9 @@
 
   <target name="compile">
     <mkdir dir="${build.dir}"/>
-    <javac srcdir="${src.dir}" classpathref="jars" debug="on" classpath="${lib.dir}/gson-2.2.4.jar" destdir="${build.dir}" />
+    <javac srcdir="${src.dir}" classpathref="jars" includeantruntime="false" debug="on" classpath="${lib.dir}/gson-2.2.4.jar" destdir="${build.dir}" >
+      <compilerarg value="-Xlint:all" />
+    </javac>
   </target>
 
   <path id="lib.cp">

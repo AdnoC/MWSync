@@ -40,6 +40,7 @@ public class MALRequest {
   protected RequestType type;
   protected Document document;
   protected static boolean[] auth = new boolean[2];
+  protected static String basicAuth = "";
 
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH;
@@ -105,17 +106,6 @@ public class MALRequest {
       ret += "?" +  Utils.buildParamsFromMap(params);
     }
     return ret;
-  }
-
-
-  protected void addAuth(URLConnection uc) {
-    String userpass = Config.MAL_USERNAME + ":" + Config.MAL_PASSWORD;
-    String basicAuth = javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-
-    uc.setRequestProperty("Authorization", "Basic " + basicAuth);
-    // Until MAL whitelists me, need to use chrome's user-agent for testing.
-    uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
-    //uc.setRequestProperty("http.agent", "MWSync");
   }
   public void changeType(RequestType rType) {
     clear();
@@ -216,34 +206,49 @@ public class MALRequest {
     return true;
   }
 
-  public void resetAuth() {
+  protected static void addAuth(URLConnection uc) {
+    uc.setRequestProperty("Authorization", basicAuth);
+    // Until MAL whitelists me, need to use chrome's user-agent for testing.
+    uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+    //uc.setRequestProperty("http.agent", "MWSync");
+  }
+
+  public static void setAuth(String user, String pass) {
+    resetAuth();
+    String userpass = user + ":" + pass;
+    MALRequest.basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+  }
+
+  public static void resetAuth() {
     MALRequest.auth = new boolean[2];
   }
-  public boolean isAuthorized() {
+
+  public static boolean isAuthorized() {
     // Set a cache of whether we are authorized so we don't have to make multiple
     // requests for authorization.
-    if(MALRequest.auth[0]) {
-      return MALRequest.auth[1];
-    }
-    int response = 401;
-    try{
-      String urlStr = RequestType.LOGIN.getURL();
-      URL url = new URL(urlStr);
-      try {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        addAuth(conn);
-        conn.setDoOutput(true);
+    if(! MALRequest.auth[0]) {
+      int response = 401;
+      try{
+        String urlStr = RequestType.LOGIN.getURL();
+        URL url = new URL(urlStr);
+        try {
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          addAuth(conn);
+          conn.setDoOutput(true);
 
-        response = conn.getResponseCode();
+          response = conn.getResponseCode();
 
-        conn.disconnect();
-      } catch(IOException ioe) {
-        ioe.printStackTrace();
+          conn.disconnect();
+        } catch(IOException ioe) {
+          ioe.printStackTrace();
+        }
+      } catch(MalformedURLException mue) {
+        mue.printStackTrace();
       }
-    } catch(MalformedURLException mue) {
-      mue.printStackTrace();
-    }
-    return response == 200;
 
+      MALRequest.auth[0] = true;
+      MALRequest.auth[1] = response == 200;
+    }
+    return MALRequest.auth[1];
   }
 }

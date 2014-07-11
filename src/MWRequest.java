@@ -1,3 +1,4 @@
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.net.URL;
 import java.net.URLConnection;
@@ -22,6 +23,44 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 public class MWRequest {
 
+  protected static String authString = "";
+  protected static boolean[] auth = new boolean[2];
+  public static void resetAuth() {
+    MWRequest.auth = new boolean[2];
+  }
+  public static void setAuth(String user, String pass) {
+    String data = "";
+    try {
+      data = URLEncoder.encode("login", "UTF-8") + "=" + URLEncoder.encode(user, "UTF-8");
+      data += "&" + URLEncoder.encode("pass", "UTF-8") + "=" + URLEncoder.encode(pass, "UTF-8");
+    } catch(UnsupportedEncodingException uee) {
+      uee.printStackTrace();
+    }
+    MWRequest.authString = data;
+  }
+
+  public static boolean isAuthorized() {
+    if(! MWRequest.auth[0]) {
+      int response = 401;
+      try {
+        String urlStr = "http://mangawatcher.org/pages/manga/auth/signin?";
+        urlStr += MWRequest.authString;
+
+
+        // Send data
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        response = conn.getResponseCode();
+
+        MWRequest.auth[0] = true;
+        MWRequest.auth[1] = response == 200;
+      } catch (Exception e) {
+        System.err.println("Error");
+        e.printStackTrace();
+      }
+    }
+    return MWRequest.auth[1];
+  }
   public ArrayList<MWItem> getMangas(int offset) {
     ArrayList<MWItem> mwItems = new ArrayList<MWItem>();
     try {
