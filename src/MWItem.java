@@ -46,14 +46,14 @@ public class MWItem {
             "date_long": 1350264894210
   },
 */
-  /**
-   * Constructor for MWItem.
-   * Convenience method that calls MWItem(JsonObject)
-   * @param jse
-   *  An Manga object from MW to parse.
-   */
-  public MWItem(JsonElement jse) {
-    this(jse.getAsJsonObject());
+  public String getTitle() {
+    return title;
+  }
+  public int getChapter() {
+    return lastRead;
+  }
+  public int getLastRead() {
+    return lastRead;
   }
   protected String stripString(String str) {
     return str.replaceAll("^\"|\"$", "");
@@ -207,7 +207,8 @@ public class MWItem {
    * @param jso
    *  An Manga object from MW to parse.
    */
-  public MWItem(JsonObject jso) {
+  public MWItem(JsonElement jse) {
+    JsonObject jso = jse.getAsJsonObject();
     // Set fields that we usually have no problem with
     genre = jso.get("genre").toString();
     parserId = Integer.parseInt(stripString(jso.get("parser_id").toString()));
@@ -260,24 +261,24 @@ public class MWItem {
   }
 
   // Data fields containing information about the manga.
-  public String genre;
-  public int parserId;
-  public int status;
-  public String hash;
-  public String catalog;
-  public boolean readingDirection;
-  public String image;
-  public String ihash;
-  public String mhash;
-  public String id;
-  public String author;
-  public String title;
-  public String uniq;
-  public int mature;
-  public int rating;
-  public long dateLong;
+  protected String genre;
+  protected int parserId;
+  protected int status;
+  protected String hash;
+  protected String catalog;
+  protected boolean readingDirection;
+  protected String image;
+  protected String ihash;
+  protected String mhash;
+  protected String id;
+  protected String author;
+  protected String title;
+  protected String uniq;
+  protected int mature;
+  protected int rating;
+  protected long dateLong;
 
-  public int lastRead = 0;
+  protected int lastRead = 0;
   /**
    * Extraneous class that is going to be removed.
    */

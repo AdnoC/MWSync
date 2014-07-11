@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 public class MWRequest {
 
+  protected int manga_offset = 0;
   protected static String authString = "";
   protected static boolean[] auth = new boolean[2];
   public static void resetAuth() {
@@ -60,6 +61,11 @@ public class MWRequest {
       }
     }
     return MWRequest.auth[1];
+  }
+  public ArrayList<MWItem> getMangas() {
+    ArrayList<MWItem> list = getMangas(manga_offset);
+    manga_offset += 20;
+    return list;
   }
   public ArrayList<MWItem> getMangas(int offset) {
     ArrayList<MWItem> mwItems = new ArrayList<MWItem>();

@@ -1,6 +1,6 @@
 let g:syntastic_java_javac_custom_classpath_command =
     \ "ant -q cp | grep echo | cut -f2- -d] | tr -d ' ' | tr ':' '\n'"
-"let g:syntastic_java_javac_classpath = 'libs/gson-2.2.4.jar:src:.'
+let g:syntastic_java_javac_classpath = 'libs/gson-2.2.4.jar:src:.'
 
 
 

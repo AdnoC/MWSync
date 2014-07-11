@@ -1,10 +1,12 @@
 
   public enum ControlAction {
     // VIEW ACTIONS
-    // Display a list
-    DISPLAY_LIST,
+    // Display a list of search results
+    DISPLAY_SEARCH,
     // Update a progress bar/message or something
     ITEM_PROCESSED,
+    // When an item was not added/updated and we moved onto the next item
+    ITEM_DROPPED,
     // Finished doing stuff so remove the progress bar/message and show completion message
     DONE_PROCESSING,
     // Prompt the user to input their MAL login details
@@ -27,6 +29,8 @@
     MW_LOGIN_INPUT,
     // Begin transfering information from MW to MAL
     TRANSFER_MANGA,
+    // A search result was chosen as a match, even if the result was nothing
+    SEARCH_RESULT_SELECTED,
     // Should this be in here? It is a Model action and isn't controlled by the View.
     SEARCH_MANGA
   };
