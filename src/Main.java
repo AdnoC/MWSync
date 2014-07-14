@@ -24,8 +24,10 @@ public class Main {
 
   public static void main(String[] args) {
     //test();
-    //new Main();
-    new CLI();
+    //System.out.println(System.in);
+    new Main();
+    //System.out.println(System.console() == null);
+    //new CLI();
   }
 
   public Main() {
@@ -33,12 +35,19 @@ public class Main {
     Controller control = new Controller();
     Model mod = new Model();
     mod.registerController(control);
-    ArrayList<String> loginDets = new ArrayList<String>();
+    UserInterface ui = getUI();
+    ui.registerController(control);
 
+    ArrayList<String> loginDets = new ArrayList<String>();
     loginDets.add(Config.MW_USERNAME);
-    loginDets.add(Config.MW_PASSWORD);
+    loginDets.add(Config.MW_PASSWORD_RAW);
     control.fireEvent(new ControlEvent(ControlAction.MW_LOGIN_INPUT, loginDets));
-    //ui.registerController(control);
+
+    loginDets = new ArrayList<String>();
+    loginDets.add(Config.MAL_USERNAME);
+    loginDets.add(Config.MAL_PASSWORD);
+    control.fireEvent(new ControlEvent(ControlAction.MAL_LOGIN_INPUT, loginDets));
+
 
   }
 
@@ -51,7 +60,7 @@ public class Main {
     if(Utils.isGUI()) {
       return null;
     } else {
-      return null;
+      return new CLI();
     }
   }
 

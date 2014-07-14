@@ -2,10 +2,15 @@ import  java.util.ArrayList;
 public class MALSearchResults {
   protected ArrayList<String> titles;
   protected ArrayList<String> ids;
+  protected String queryString;
 
-  public MALSearchResults() {
+  public MALSearchResults(String query) {
     titles = new ArrayList<String>();
     ids = new ArrayList<String>();
+    queryString = query;
+  }
+  public MALSearchResults() {
+    this("");
   }
 
   public void add(String title, String id) {
@@ -24,6 +29,9 @@ public class MALSearchResults {
   public String getId(int index) {
     return ids.get(index);
   }
+  public String getQueryString() {
+    return queryString;
+  }
 
   /**
    * Searches for a title in this search results, matching ignoring case.
@@ -35,12 +43,14 @@ public class MALSearchResults {
    *  Returns -2 if there was multiple matches.
    */
   public int getIdForTitle(String title) {
+    System.out.println("Searching for '"+title+"'");
     // Initialize the search index as not found.
     int index = -1;
     // For each title in the seach results
     for(int i = 0; i < titles.size(); i++) {
       // If the titles match
       if(title.equalsIgnoreCase(titles.get(i))) {
+        System.out.println("Found match'"+titles.get(i)+"'" + " " + index);
         // If we have not found any other matches yet
         if(index != -1) {
           // Set the search index to this index

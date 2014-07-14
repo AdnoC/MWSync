@@ -30,16 +30,36 @@ public class Model {
     }
     control.fireEvent(ce);
   }
+  public void messageLoginStatus() {
+    ControlEvent ce;
+    if(MALRequest.isAuthorized()) {
+      ce = new ControlEvent(ControlAction.CORRECT_MAL_LOGIN, null);
+    } else {
+      ce = new ControlEvent(ControlAction.INCORRECT_MAL_LOGIN, null);
+    }
+    control.fireEvent(ce);
+    if(MWRequest.isAuthorized()) {
+      ce = new ControlEvent(ControlAction.CORRECT_MW_LOGIN, null);
+    } else {
+      ce = new ControlEvent(ControlAction.INCORRECT_MW_LOGIN, null);
+    }
+    control.fireEvent(ce);
+  }
   public void transferManga() {
+    if(!MWRequest.isAuthorized() || !MALRequest.isAuthorized()) {
+      messageLoginStatus();
+      return;
+    }
     if(queue == null) {
       queue = new TransferQueue();
     }
     for(MWItem it : queue) {
 
-      String title = it.getTitle();
+      String title = it.getDecodedTitle();
       MALSearchResults malSearch = MALClient.searchMangas(title);
       int index = malSearch.getIdForTitle(title);
 
+      System.out.println("INDEX: " + index);
       ControlEvent ce;
       if(index < 0) {
         ce = new ControlEvent(ControlAction.DISPLAY_SEARCH, malSearch);
@@ -49,19 +69,22 @@ public class Model {
         String malId = malSearch.getId(index);
         MALClient.addManga(malId);
         MALClient.updateManga(malId, String.valueOf(it.getChapter()));
-        ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it.toString());
+        ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it);
         control.fireEvent(ce);
       }
     }
   }
   public void addSearchResult(int index) {
+    if(queue == null) {
+      return ;
+    }
     MWItem it = queue.current();
-    String title = it.getTitle();
+    String title = it.getDecodedTitle();
     MALSearchResults malSearch = MALClient.searchMangas(title);
 
     // If an invalid choice was selected, just pass over this item.
     if(index < 0 || index >= malSearch.size()) {
-      ControlEvent ce = new ControlEvent(ControlAction.ITEM_DROPPED, it.toString());
+      ControlEvent ce = new ControlEvent(ControlAction.ITEM_DROPPED, it);
       control.fireEvent(ce);
       return ;
     }
@@ -69,7 +92,7 @@ public class Model {
     String malId = malSearch.getId(index);
     MALClient.addManga(malId);
     MALClient.updateManga(malId, String.valueOf(it.getChapter()));
-    ControlEvent ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it.toString());
+    ControlEvent ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it);
     control.fireEvent(ce);
   }
 
@@ -94,6 +117,11 @@ public class Model {
           case SEARCH_RESULT_SELECTED: {
             addSearchResult((Integer)ce.getData());
             transferManga();
+            break;
+          }
+          case LOGIN_STATUS: {
+            messageLoginStatus();
+            break;
           }
         }
 

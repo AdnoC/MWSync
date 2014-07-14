@@ -31,4 +31,6 @@
     TRANSFER_MANGA,
     // A search result was chosen as a match, even if the result was nothing
     SEARCH_RESULT_SELECTED,
+    // Message the status of both services login information
+    LOGIN_STATUS
   };

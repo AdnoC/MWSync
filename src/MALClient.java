@@ -6,6 +6,7 @@ public class MALClient {
   protected static MALSearchResults lastSearch = null;
   protected static String lastSearchString;
   public static boolean updateManga(String id, String chapter) {
+    if(1==1) return true;
     addManga(id);
     MALRequest malr = new MALRequest(MALRequest.RequestType.UPDATE);
     malr.addParam("id", id);
@@ -17,6 +18,7 @@ public class MALClient {
     return response.equals("Updated");
   }
   public static void addManga(String id) {
+    if(1==1) return ;
     MALRequest malr = new MALRequest(MALRequest.RequestType.ADD);
     malr.addParam("id", id);
     MALData mald = new MALData();
@@ -25,10 +27,11 @@ public class MALClient {
     malr.requestString();
   }
   public static MALSearchResults searchMangas(String title) {
-    if(lastSearchString.equals(title)) {
+    // If we cached the search, just return it
+    if(lastSearchString != null && lastSearchString.equals(title)) {
       return lastSearch;
     }
-    MALSearchResults malSR = new MALSearchResults();
+    MALSearchResults malSR = new MALSearchResults(title);
     MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
     malr.addParam("q", title);
     Document doc = malr.requestDocument();
@@ -41,7 +44,9 @@ public class MALClient {
       String nId = ndid.getTextContent();
       malSR.add(nTitle, nId);
     }
+    // Cache the query
     lastSearch = malSR;
+    lastSearchString = title;
     return malSR;
   }
 

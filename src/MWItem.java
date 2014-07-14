@@ -49,6 +49,9 @@ public class MWItem {
   public String getTitle() {
     return title;
   }
+  public String getDecodedTitle() {
+    return decodedTitle;
+  }
   public int getChapter() {
     return lastRead;
   }
@@ -221,6 +224,12 @@ public class MWItem {
     id = jso.get("id").toString();
     author = jso.get("author").toString();
     title = jso.get("title").toString();
+    try {
+      decodedTitle = URLDecoder.decode(title, "UTF-8");
+      decodedTitle = stripString(decodedTitle);
+    } catch(UnsupportedEncodingException uee) {
+      uee.printStackTrace();
+    }
     uniq = jso.get("uniq").toString();
     mature = Integer.parseInt(stripString(jso.get("mature").toString()));
     rating = Integer.parseInt(stripString(jso.get("rating").toString()));
@@ -273,6 +282,7 @@ public class MWItem {
   protected String id;
   protected String author;
   protected String title;
+  protected String decodedTitle;
   protected String uniq;
   protected int mature;
   protected int rating;

@@ -148,9 +148,15 @@ public class MALRequest {
   public Document requestDocument(){
     try{
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setValidating(false);
       DocumentBuilder builder = factory.newDocumentBuilder();
       try {
-        Document dom = builder.parse(request());
+        InputStream is = request();
+        if(is == null) {
+          return null;
+        }
+        Document dom = builder.parse(is);
+        System.out.println("DOCTYPE: " + dom.getDoctype());
         this.document = dom;
         return dom;
       } catch(SAXException saxe) {
@@ -185,6 +191,22 @@ public class MALRequest {
         conn = (HttpURLConnection) url.openConnection();
         addAuth(conn);
         conn.setDoOutput(true);
+        int rCode = conn.getResponseCode();
+        System.out.println("CODE: " + rCode);
+        if(urlStr.contains("Fukashigi")) {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    StringBuilder builder = new StringBuilder();
+    String aux = "";
+        System.out.println("INPUT:");
+    try{
+      while ((aux = reader.readLine()) != null) {
+        System.out.println(aux);
+      }
+    } catch(IOException ioe) {
+      ioe.printStackTrace();
+    }
+        }
+
         return conn.getInputStream();
 
 

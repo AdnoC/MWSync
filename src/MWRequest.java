@@ -30,6 +30,8 @@ public class MWRequest {
     MWRequest.auth = new boolean[2];
   }
   public static void setAuth(String user, String pass) {
+    resetAuth();
+    pass = MD5Gen.encryptPass(user, pass);
     String data = "";
     try {
       data = URLEncoder.encode("login", "UTF-8") + "=" + URLEncoder.encode(user, "UTF-8");
