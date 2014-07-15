@@ -58,7 +58,7 @@ public class Main {
   public UserInterface getUI() {
     //@TODO: return valid ui objects after I make the classes.
     if(Utils.isGUI()) {
-      return null;
+      return new GUI();
     } else {
       return new CLI();
     }

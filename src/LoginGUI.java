@@ -3,19 +3,21 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
-class LoginGUI extends JPanel {
+public class LoginGUI extends JPanel {
+  private static final long serialVersionUID = 784058209485L;
   protected String user;
   protected String pass;
   protected String title;
-
+  JPasswordField passField;
+  JTextField userField;
   public LoginGUI(String title) {
     this.title = title;
     user = null;
     pass = null;
     JLabel uLabel = new JLabel("Username:");
-    JTextField userField = new JTextField(10);
+    userField = new JTextField(10);
     JLabel pLabel = new JLabel("Password: ");
-    JPasswordField passField = new JPasswordField(10);
+    passField = new JPasswordField(10);
     this.add(uLabel);
     this.add(userField);
     this.add(pLabel);

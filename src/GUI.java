@@ -2,7 +2,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import java.awt.BorderLayout;
-public class GUI {
+
+import java.util.ArrayList;
+public class GUI extends UserInterface {
   protected JFrame frame;
   // The login persists so that users do not have to repeat typing in their
   // username if login fails. It is deleted on successful login.
@@ -13,6 +15,8 @@ public class GUI {
   }
   public void run() {
     frame = new JFrame("MWSync");
+          //promptLogin("Manga Watcher", ControlAction.MW_LOGIN_INPUT);
+          //promptLogin("MyAnimeList", ControlAction.MAL_LOGIN_INPUT);
   }
 
   protected void displayLoginSuccess(String serviceName) {
@@ -45,14 +49,6 @@ public class GUI {
     @SuppressWarnings("unchecked")
     public void fireEvent(ControlEvent ce) {
       switch(ce.getMessage()) {
-        case PROMPT_MW_LOGIN: {
-          promptLogin("Manga Watcher", ControlAction.MW_LOGIN_INPUT);
-          break;
-        }
-        case PROMPT_MAL_LOGIN: {
-          promptLogin("MyAnimeList", ControlAction.MAL_LOGIN_INPUT);
-          break;
-        }
         case CORRECT_MAL_LOGIN: {
           login = null;
           displayLoginSuccess("MyAnimeList");

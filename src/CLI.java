@@ -77,7 +77,7 @@ public class CLI extends UserInterface {
     System.out.println("Could not find a perfect match withfor the manga: " + search.getQueryString());
     System.out.println("Please select one of the options from this list:");
     for(int i = 0; i < search.size(); i++) {
-      System.out.format("[%d] %s", i, search.getTitle(i));
+      System.out.format("[%d] %s (%s)", i, search.getTitle(i), search.getType(i));
       System.out.println();
     }
     System.out.println("Input the number of the correct manga. Input '-1' to skip");

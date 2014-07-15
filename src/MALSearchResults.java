@@ -2,20 +2,23 @@ import  java.util.ArrayList;
 public class MALSearchResults {
   protected ArrayList<String> titles;
   protected ArrayList<String> ids;
+  protected ArrayList<String> types;
   protected String queryString;
 
   public MALSearchResults(String query) {
     titles = new ArrayList<String>();
     ids = new ArrayList<String>();
+    types = new ArrayList<String>();
     queryString = query;
   }
   public MALSearchResults() {
     this("");
   }
 
-  public void add(String title, String id) {
+  public void add(String title, String id, String type) {
     titles.add(title);
     ids.add(id);
+    types.add(type);
   }
   public int size(){
     return ids.size();
@@ -28,6 +31,9 @@ public class MALSearchResults {
   }
   public String getId(int index) {
     return ids.get(index);
+  }
+  public String getType(int index) {
+    return types.get(index);
   }
   public String getQueryString() {
     return queryString;
