@@ -127,6 +127,9 @@ public class CLI extends UserInterface {
           displayDropped((MWItem) ce.getData());
           break;
         }
+        case DONE_PROCESSING: {
+          System.out.println("Finished transfering mangas");
+        }
       }
     }
   }
