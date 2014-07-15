@@ -135,21 +135,22 @@ public class MALRequest {
   }
   public Document requestDocument(){
     try{
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(false);
-      DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setValidating(false);
+        DocumentBuilder dbuilder = factory.newDocumentBuilder();
       try {
           String req = request();
+          System.out.println("REQ: " + req);
         if(req == null) {
           return null;
         }
         // Fix simple xml entity errors
         //req = req.replaceAll("&rsquo", "&amp;rsquo");
 //req = new String(Charset.forName("UTF-8").encode(req).array(), "UTF-8");
-        //InputStream is = new ByteArrayInputStream(req.getBytes());
-        InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
-        is.setEncoding("UTF-8");
-        Document dom = builder.parse(is);
+        InputStream is = new ByteArrayInputStream(req.getBytes());
+        //InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
+        //is.setEncoding("UTF-8");
+        Document dom = dbuilder.parse(is);
         this.document = dom;
         return dom;
       } catch(SAXException saxe) {
@@ -188,17 +189,13 @@ public class MALRequest {
         System.out.println("CODE: " + rCode);
 
 
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder builder = new StringBuilder();
+          //builder.append(reader.readLine());
+          //builder.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
         String aux = "";
-
-        try{
           while ((aux = reader.readLine()) != null) {
-              builder.append(aux);
-          }
-        } catch(IOException ioe) {
-          ioe.printStackTrace();
+            builder.append(aux);
         }
 
         return builder.toString();
