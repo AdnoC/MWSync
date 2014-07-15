@@ -138,10 +138,9 @@ public class MALRequest {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(false);
         DocumentBuilder dbuilder = factory.newDocumentBuilder();
+        String req = request();
       try {
-          String req = request();
-          System.out.println("REQ: " + req);
-        if(req == null) {
+        if(req == null || req == "") {
           return null;
         }
         // Fix simple xml entity errors
@@ -152,16 +151,31 @@ public class MALRequest {
         //is.setEncoding("UTF-8");
         Document dom = dbuilder.parse(is);
         this.document = dom;
-        return dom;
       } catch(SAXException saxe) {
-        saxe.printStackTrace();
+        // If we had a sax exception, replace all html entities and try parsing
+        // again. This will solve 99% of the problems.
+        // @TODO: Add handles for all html entities
+        req = req.replaceAll("&rsquo", "&amp;rsquo");
+        req = req.replaceAll("&ldquo", "&amp;ldquo");
+        req = req.replaceAll("&rdquo", "&amp;rdquo");
+        try{
+          InputStream is = new ByteArrayInputStream(req.getBytes());
+          try{
+            Document dom = dbuilder.parse(is);
+            this.document = dom;
+          } catch(SAXException saxe2) {
+            saxe2.printStackTrace();
+          }
+        } catch(IOException ioe) {
+          ioe.printStackTrace();
+        }
       } catch(IOException ioe) {
         ioe.printStackTrace();
       }
     } catch(ParserConfigurationException pce) {
       pce.printStackTrace();
     }
-    return null;
+    return this.document;
   }
   public String request() throws BadRequestParamsException {
     if(! canRequest()) {
@@ -189,10 +203,8 @@ public class MALRequest {
         System.out.println("CODE: " + rCode);
 
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
         StringBuilder builder = new StringBuilder();
-          //builder.append(reader.readLine());
-          //builder.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
         String aux = "";
           while ((aux = reader.readLine()) != null) {
             builder.append(aux);

@@ -35,6 +35,9 @@ public class MALClient {
     MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
     malr.addParam("q", title);
     Document doc = malr.requestDocument();
+    if(doc == null) {
+      return null;
+    }
     NodeList nl = doc.getElementsByTagName("title");
     for(int i = 0; i < nl.getLength(); i++) {
       Node nd = nl.item(i);

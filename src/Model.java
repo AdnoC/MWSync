@@ -57,6 +57,10 @@ public class Model {
 
       String title = it.getDecodedTitle();
       MALSearchResults malSearch = MALClient.searchMangas(title);
+      if(malSearch == null) {
+        control.fireEvent(new ControlEvent(ControlAction.ITEM_DROPPED, it));
+        continue;
+      }
       int index = malSearch.getIdForTitle(title);
 
       System.out.println("INDEX: " + index);
