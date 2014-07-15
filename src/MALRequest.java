@@ -1,4 +1,5 @@
 import java.net.HttpURLConnection;
+import java.io.ByteArrayInputStream;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URL;
@@ -130,33 +131,20 @@ public class MALRequest {
       return document;
     }
   }
-  public String requestString() {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(request()));
-    StringBuilder builder = new StringBuilder();
-    String aux = "";
-
-    try{
-      while ((aux = reader.readLine()) != null) {
-          builder.append(aux);
-      }
-    } catch(IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    return builder.toString();
-  }
   public Document requestDocument(){
     try{
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setValidating(false);
       DocumentBuilder builder = factory.newDocumentBuilder();
       try {
-        InputStream is = request();
-        if(is == null) {
+          String req = request();
+        if(req == null) {
           return null;
         }
+        // Fix simple xml entity errors
+        req = req.replaceAll("&rsquo", "&amp;rsquo");
+        InputStream is = new ByteArrayInputStream(req.getBytes());
         Document dom = builder.parse(is);
-        System.out.println("DOCTYPE: " + dom.getDoctype());
         this.document = dom;
         return dom;
       } catch(SAXException saxe) {
@@ -169,7 +157,7 @@ public class MALRequest {
     }
     return null;
   }
-  public InputStream request() throws BadRequestParamsException {
+  public String request() throws BadRequestParamsException {
     if(! canRequest()) {
       ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
       req.removeAll(params.keySet());
@@ -193,21 +181,22 @@ public class MALRequest {
         conn.setDoOutput(true);
         int rCode = conn.getResponseCode();
         System.out.println("CODE: " + rCode);
-        if(urlStr.contains("Fukashigi")) {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-    StringBuilder builder = new StringBuilder();
-    String aux = "";
-        System.out.println("INPUT:");
-    try{
-      while ((aux = reader.readLine()) != null) {
-        System.out.println(aux);
-      }
-    } catch(IOException ioe) {
-      ioe.printStackTrace();
-    }
+
+
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder builder = new StringBuilder();
+        String aux = "";
+
+        try{
+          while ((aux = reader.readLine()) != null) {
+              builder.append(aux);
+          }
+        } catch(IOException ioe) {
+          ioe.printStackTrace();
         }
 
-        return conn.getInputStream();
+        return builder.toString();
 
 
       } catch(IOException ioe) {

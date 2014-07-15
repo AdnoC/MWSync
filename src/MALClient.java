@@ -14,7 +14,7 @@ public class MALClient {
     mald.put("status", "1");
     mald.put("chapter", chapter);
     malr.addParam("data", mald.toString());
-    String response = malr.requestString();
+    String response = malr.request();
     return response.equals("Updated");
   }
   public static void addManga(String id) {
@@ -24,7 +24,7 @@ public class MALClient {
     MALData mald = new MALData();
     mald.put("status", "1");
     malr.addParam("data", mald.toString());
-    malr.requestString();
+    malr.request();
   }
   public static MALSearchResults searchMangas(String title) {
     // If we cached the search, just return it

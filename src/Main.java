@@ -93,7 +93,7 @@ public class Main {
     mald.put("status", "1");
     mald.put("chapter", "1");
     malr.addParam("data", mald.toString());
-    System.out.println(malr.requestString());
+    System.out.println(malr.request());
 
   }
 }
