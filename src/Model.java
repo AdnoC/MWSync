@@ -68,7 +68,7 @@ public class Model {
       } else {
         String malId = malSearch.getId(index);
         MALClient.addManga(malId);
-        MALClient.updateManga(malId, String.valueOf(it.getChapter()));
+        //MALClient.updateManga(malId, String.valueOf(it.getChapter()));
         ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it);
         control.fireEvent(ce);
       }
@@ -91,7 +91,7 @@ public class Model {
 
     String malId = malSearch.getId(index);
     MALClient.addManga(malId);
-    MALClient.updateManga(malId, String.valueOf(it.getChapter()));
+    //MALClient.updateManga(malId, String.valueOf(it.getChapter()));
     ControlEvent ce = new ControlEvent(ControlAction.ITEM_PROCESSED, it);
     control.fireEvent(ce);
   }

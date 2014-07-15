@@ -1,4 +1,6 @@
 import java.net.HttpURLConnection;
+import org.xml.sax.InputSource;
+import java.nio.charset.Charset;
 import java.io.ByteArrayInputStream;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -142,8 +144,11 @@ public class MALRequest {
           return null;
         }
         // Fix simple xml entity errors
-        req = req.replaceAll("&rsquo", "&amp;rsquo");
-        InputStream is = new ByteArrayInputStream(req.getBytes());
+        //req = req.replaceAll("&rsquo", "&amp;rsquo");
+//req = new String(Charset.forName("UTF-8").encode(req).array(), "UTF-8");
+        //InputStream is = new ByteArrayInputStream(req.getBytes());
+        InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
+        is.setEncoding("UTF-8");
         Document dom = builder.parse(is);
         this.document = dom;
         return dom;

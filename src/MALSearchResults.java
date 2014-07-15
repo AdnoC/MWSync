@@ -52,7 +52,7 @@ public class MALSearchResults {
       if(title.equalsIgnoreCase(titles.get(i))) {
         System.out.println("Found match'"+titles.get(i)+"'" + " " + index);
         // If we have not found any other matches yet
-        if(index != -1) {
+        if(index == -1) {
           // Set the search index to this index
           index = i;
         // If we already found a match
