@@ -85,12 +85,15 @@ public class GUI extends UserInterface {
     });
 
     frame.add(accountPanel, BorderLayout.NORTH);
+    accountPanel.setPreferredSize(new Dimension(500, 100));
 
 
     transferLog = new JPanel();
     BoxLayout boxLay = new BoxLayout(transferLog, BoxLayout.Y_AXIS);
     transferLog.setLayout(boxLay);
     JScrollPane jsp = new JScrollPane(transferLog);
+    // Make it scroll faster
+    jsp.getVerticalScrollBar().setUnitIncrement(20);
     jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     frame.add(jsp, BorderLayout.CENTER);
@@ -181,7 +184,6 @@ public class GUI extends UserInterface {
       //null,
       //buts,
       //buts[0]);
-
   }
 
   public void startThread() {
@@ -219,23 +221,23 @@ public class GUI extends UserInterface {
         }
         case ITEM_PROCESSED: {
                                //@TODO: when adding items, add them to the top
-          ItemPane ip = ItemPane.newSuccess((MALSearchResults.MALSearchResult) ce.getData());
+          ItemPane ip = ItemPane.newSuccess((MangaItem) ce.getData());
           list.add(ip);
-          transferLog.add(ip.getContainer());
+          // 0 supposedly makes it add in bottom-to-top order
+          transferLog.add(ip.getContainer(), 0);
           transferLog.revalidate();
           break;
         }
         case ITEM_DROPPED: {
-          ItemPane ip = ItemPane.newFailure((MALSearchResults.MALSearchResult) ce.getData());
+          ItemPane ip = ItemPane.newFailure((MangaItem) ce.getData());
           list.add(ip);
-          transferLog.add(ip.getContainer());
+          // 0 supposedly makes it add in bottom-to-top order
+          transferLog.add(ip.getContainer(), 0);
           transferLog.revalidate();
           break;
         }
-        // FOR DEBUG ONLY
         case DISPLAY_SEARCH: {
           showSearch((MALSearchResults) ce.getData());
-          //controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, -1));
           break;
         }
       }

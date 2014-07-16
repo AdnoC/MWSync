@@ -83,11 +83,11 @@ public class CLI extends UserInterface {
     }
     System.out.println("Input the number of the correct manga. Input '-1' to skip");
   }
-  protected void displayProcessed(MALSearchResults.MALSearchResult it) {
-    System.out.format("Processed %s: %s", it.getTitle(), it.chapter);
+  protected void displayProcessed(MangaItem it) {
+    System.out.format("Processed %s: %s", it.getTitle(), it.getChapter());
     System.out.println();
   }
-  protected void displayDropped(MALSearchResults.MALSearchResult it) {
+  protected void displayDropped(MangaItem it) {
     System.out.format("---DROPPED %s", it.getTitle());
     System.out.println();
   }
@@ -121,11 +121,11 @@ public class CLI extends UserInterface {
           break;
         }
         case ITEM_PROCESSED: {
-          displayProcessed((MALSearchResults.MALSearchResult) ce.getData());
+          displayProcessed((MangaItem) ce.getData());
           break;
         }
         case ITEM_DROPPED: {
-          displayDropped((MALSearchResults.MALSearchResult) ce.getData());
+          displayDropped((MangaItem) ce.getData());
           break;
         }
         case DONE_PROCESSING: {

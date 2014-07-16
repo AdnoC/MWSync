@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 /**
  * Data storage class that parses a Manga from MW API and stores its information.
  */
-public class MWItem {
+public class MWItem implements MangaItem {
 /*
    {
             "genre": ",3,5,7,19,25,29",
@@ -46,6 +46,9 @@ public class MWItem {
             "date_long": 1350264894210
   },
 */
+  public String getImage() {
+    return "";
+  }
   public String getTitle() {
     return title;
   }

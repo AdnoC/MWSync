@@ -38,7 +38,7 @@ public class ItemPane {
     // Set the label's font size to the newly determined size.
     name.setFont(new Font(labelFont.getName(), Font.PLAIN, fontSizeToUse - 3));
   }
-  protected ItemPane(MALSearchResults.MALSearchResult malsr) {
+  protected ItemPane(MangaItem malsr) {
     container = new JPanel(new BorderLayout());
     try {
       URL url = new URL(malsr.getImage());
@@ -52,26 +52,26 @@ public class ItemPane {
     container.add(name, BorderLayout.CENTER);
 
     name.setFont(new Font(name.getFont().getName(), Font.PLAIN, 20));
-    if(malsr.chapter != null && malsr.chapter != "") {
-      name.setText(name.getText() + ": " + malsr.chapter);
+    if(malsr.getChapter() != 0) {
+      name.setText(name.getText() + ": " + malsr.getChapter());
     }
     container.setOpaque(true);
     container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
   }
 
-  public static ItemPane newSuccess(MALSearchResults.MALSearchResult malsr) {
+  public static ItemPane newSuccess(MangaItem malsr) {
     ItemPane ip = new ItemPane(malsr);
     ip.container.setPreferredSize(new Dimension(500 - 3 * GUI.COMMON_SCROLLBAR_WIDTH, 500 / 4));
     ip.container.setBackground(new Color(102, 255, 102));
     return ip;
   }
-  public static ItemPane newFailure(MALSearchResults.MALSearchResult malsr) {
+  public static ItemPane newFailure(MangaItem malsr) {
     ItemPane ip = new ItemPane(malsr);
     ip.container.setBackground(new Color(255, 102, 102));
     ip.container.setPreferredSize(new Dimension(500 - 3 * GUI.COMMON_SCROLLBAR_WIDTH, 500 / 4));
     return ip;
   }
-  public static ItemPane newSearch(MALSearchResults.MALSearchResult malsr) {
+  public static ItemPane newSearch(MangaItem malsr) {
     ItemPane ip = new ItemPane(malsr);
     ip.container.setBackground(new Color(102, 255, 253));
     JButton jb = new JButton();

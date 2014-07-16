@@ -1,4 +1,5 @@
 import  java.util.ArrayList;
+import java.util.regex.Pattern;
 public class MALSearchResults {
   public static boolean onlyMangas = true;
   protected ArrayList<MALSearchResult> results;
@@ -55,6 +56,7 @@ public class MALSearchResults {
    */
   public int getIdForTitle(String title) {
     System.out.println("Searching for '"+title+"'");
+    title = processWord(title);
     // Initialize the search index as not found.
     int index = -1;
     // For each title in the seach results
@@ -77,14 +79,20 @@ public class MALSearchResults {
     // Return the search index.
     return index;
   }
-  protected class MALSearchResult {
+  private static final Pattern UNDESIRABLES = Pattern.compile("[][(){},.;!?<>%]");
+  private static String processWord(String x) {
+      return UNDESIRABLES.matcher(x).replaceAll("");
+  }
+  protected class MALSearchResult implements MangaItem {
     protected String title;
+    protected String matchingTitle;
     protected String id;
     protected String type;
     protected String imageUrl;
-    public String chapter;
+    public int chapter;
     public MALSearchResult(String title, String id, String type, String imageUrl) {
       this.title = title;
+      this.matchingTitle = processWord(title);
       this.id = id;
       this.type = type;
       this.imageUrl = imageUrl;
@@ -101,16 +109,20 @@ public class MALSearchResults {
     public String getType() {
       return type;
     }
+    public int getChapter() {
+      return chapter;
+    }
     @Override
     public boolean equals(Object o) {
       if(o instanceof String) {
         String s = (String) o;
-        return s.equalsIgnoreCase(title);
+        // Stripping non-words makes for better matching when there are things like '!'
+        return s.equalsIgnoreCase(matchingTitle);
       } else if (o instanceof MALSearchResult) {
         MALSearchResult m = (MALSearchResult) o;
-        return m.title.equalsIgnoreCase(title);
+        return m.title.equalsIgnoreCase(matchingTitle);
       } else {
-        return o.toString().equalsIgnoreCase(title);
+        return o.toString().equalsIgnoreCase(matchingTitle);
       }
     }
   }
