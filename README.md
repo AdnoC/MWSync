@@ -8,6 +8,7 @@ Status: Fully funcional command line interface
 
 ### Todo:
 * Create a gui.
+* Fix showing dropped items 
 * Save search resolutions so that repeat syncs are faster.
 * Add a check before updating to make sure you aren't setting MAL read chapters to a smaller value
   than is already set.
