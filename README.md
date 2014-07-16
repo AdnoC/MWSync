@@ -9,3 +9,7 @@ Status: Fully funcional command line interface
 ### Todo:
 * Create a gui.
 * Save search resolutions so that repeat syncs are faster.
+* Add a check before updating to make sure you aren't setting MAL read chapters to a smaller value
+  than is already set.
+* Clean up all the sloppy coding I did in terms of multi-threading
+* Write comments for EVERYTHING
