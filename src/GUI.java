@@ -165,8 +165,6 @@ public class GUI extends UserInterface {
           break;
         }
         case ITEM_PROCESSED: {
-                               //ItemPane.newFailure()
-                                 //ItemPane.newSearch()
           ItemPane ip = ItemPane.newSuccess((MALSearchResults.MALSearchResult) ce.getData());
           list.add(ip);
           transferLog.add(ip.getContainer());
@@ -182,6 +180,7 @@ public class GUI extends UserInterface {
         }
         // FOR DEBUG ONLY
         case DISPLAY_SEARCH: {
+                                 //ItemPane.newSearch()
           controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, -1));
           break;
         }

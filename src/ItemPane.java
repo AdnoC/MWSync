@@ -1,4 +1,5 @@
 import javax.swing.JPanel;
+import javax.swing.BorderFactory;
 import java.awt.Color;
 import javax.swing.SwingConstants;
 import java.awt.Dimension;
@@ -55,6 +56,7 @@ public class ItemPane {
       name.setText(name.getText() + ": " + malsr.chapter);
     }
     container.setOpaque(true);
+    container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
   }
 
   public static ItemPane newSuccess(MALSearchResults.MALSearchResult malsr) {
