@@ -1,4 +1,7 @@
 import javax.swing.JFrame;
+import javax.swing.JDialog;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.ScrollPaneConstants;
@@ -130,6 +133,56 @@ public class GUI extends UserInterface {
       }
     }
   }
+  public void showSearch(MALSearchResults mals) {
+    ArrayList<JButton> buttons = new ArrayList<JButton>();
+
+    for(int i = 0; i < mals.size(); i++) {
+      JComponent jc = ItemPane.newSearch(mals.get(i)).getContainer();;
+      if(jc instanceof JButton) {
+        JButton but = (JButton) jc;
+        buttons.add(but);
+      }
+    }
+    buttons.add(new JButton("Cancel"));
+
+//(Component parentComponent, Object message, String title, int optionType, int messageType, Icon icon, Object[] options, Object initialValue)
+                //JOptionPane(Object message, int messageType, int optionType, Icon icon, Object[] options, Object initialValue)
+
+    JButton[] buts = buttons.toArray(new JButton[buttons.size()]);
+    final JOptionPane jop = new JOptionPane(null, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, buts, buts[0]);
+    for(int i = 0; i < buts.length; i++) {
+      final int val = i;
+      buts[i].addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+          jop.setValue(val);
+        }
+      });
+    }
+    JDialog dialog = jop.createDialog(null, null);
+    dialog.setVisible(true);
+    Object ret = null;
+    while((ret = jop.getValue()) == JOptionPane.UNINITIALIZED_VALUE) {
+      try {
+        Thread.sleep(150);
+      } catch(InterruptedException ie) {
+        // Do nothing
+      }
+    }
+    Integer index = (Integer) ret;
+    System.out.println("Selected option: " + ret);
+    controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, index));
+    //int value = JOptionPane.showOptionDialog(
+      //null,
+      //null,
+      //"Get",
+      //JOptionPane.DEFAULT_OPTION,
+      //JOptionPane.QUESTION_MESSAGE,
+      //null,
+      //buts,
+      //buts[0]);
+
+  }
 
   public void startThread() {
     javax.swing.SwingUtilities.invokeLater(this);
@@ -165,6 +218,7 @@ public class GUI extends UserInterface {
           break;
         }
         case ITEM_PROCESSED: {
+                               //@TODO: when adding items, add them to the top
           ItemPane ip = ItemPane.newSuccess((MALSearchResults.MALSearchResult) ce.getData());
           list.add(ip);
           transferLog.add(ip.getContainer());
@@ -180,8 +234,8 @@ public class GUI extends UserInterface {
         }
         // FOR DEBUG ONLY
         case DISPLAY_SEARCH: {
-                                 //ItemPane.newSearch()
-          controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, -1));
+          showSearch((MALSearchResults) ce.getData());
+          //controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, -1));
           break;
         }
       }

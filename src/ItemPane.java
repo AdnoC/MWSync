@@ -13,8 +13,8 @@ import java.net.URL;
 import java.net.MalformedURLException;
 public class ItemPane {
   protected String chapter;
-  protected JPanel container;
-  public JPanel getContainer() {
+  protected JComponent container;
+  public JComponent getContainer() {
     return container;
   }
   protected JLabel name;
@@ -61,8 +61,8 @@ public class ItemPane {
 
   public static ItemPane newSuccess(MALSearchResults.MALSearchResult malsr) {
     ItemPane ip = new ItemPane(malsr);
-    ip.container.setBackground(new Color(102, 255, 253));
     ip.container.setPreferredSize(new Dimension(500 - 3 * GUI.COMMON_SCROLLBAR_WIDTH, 500 / 4));
+    ip.container.setBackground(new Color(102, 255, 102));
     return ip;
   }
   public static ItemPane newFailure(MALSearchResults.MALSearchResult malsr) {
@@ -73,11 +73,10 @@ public class ItemPane {
   }
   public static ItemPane newSearch(MALSearchResults.MALSearchResult malsr) {
     ItemPane ip = new ItemPane(malsr);
+    ip.container.setBackground(new Color(102, 255, 253));
     JButton jb = new JButton();
     jb.add(ip.container);
-    JPanel jc = new JPanel();
-    jc.add(jb);
-    ip.container = jc;
+    ip.container = jb;
     return ip;
 
   }
