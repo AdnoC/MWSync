@@ -234,8 +234,8 @@ public class MALRequest {
   protected static void addAuth(URLConnection uc) {
     uc.setRequestProperty("Authorization", basicAuth);
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
-    uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
-    //uc.setRequestProperty("http.agent", "MWSync");
+    //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+    uc.setRequestProperty("http.agent", "MWSync");
   }
 
   public static void setAuth(String user, String pass) {
