@@ -1,14 +1,12 @@
 import  java.util.ArrayList;
 public class MALSearchResults {
-  protected ArrayList<String> titles;
-  protected ArrayList<String> ids;
-  protected ArrayList<String> types;
+  public static boolean onlyMangas = true;
+  protected ArrayList<MALSearchResult> results;
+  // Maps valid search result index with result array indexes
   protected String queryString;
 
   public MALSearchResults(String query) {
-    titles = new ArrayList<String>();
-    ids = new ArrayList<String>();
-    types = new ArrayList<String>();
+    results = new ArrayList<MALSearchResult>();
     queryString = query;
   }
   public MALSearchResults() {
@@ -16,27 +14,34 @@ public class MALSearchResults {
   }
 
   public void add(String title, String id, String type) {
-    titles.add(title);
-    ids.add(id);
-    types.add(type);
+    add(title, id, type, "");
+  }
+
+  public void add(String title, String id, String type, String image) {
+    if(MALSearchResults.onlyMangas && type.equalsIgnoreCase("manga")) {
+      results.add(new MALSearchResult(title, id, type, image));
+    }
   }
   public int size(){
-    return ids.size();
+    return results.size();
   }
   public int length(){
-    return ids.size();
+    return this.size();
   }
   public String getTitle(int index) {
-    return titles.get(index);
+    return results.get(index).title;
   }
   public String getId(int index) {
-    return ids.get(index);
+    return results.get(index).id;
   }
   public String getType(int index) {
-    return types.get(index);
+    return results.get(index).type;
   }
   public String getQueryString() {
     return queryString;
+  }
+  public MALSearchResult get(int index) {
+    return results.get(index);
   }
 
   /**
@@ -53,10 +58,10 @@ public class MALSearchResults {
     // Initialize the search index as not found.
     int index = -1;
     // For each title in the seach results
-    for(int i = 0; i < titles.size(); i++) {
+    for(int i = 0; i < results.size(); i++) {
       // If the titles match
-      if(title.equalsIgnoreCase(titles.get(i))) {
-        System.out.println("Found match'"+titles.get(i)+"'" + " " + index);
+      if(results.get(i).equals(title)) {
+        System.out.println("Found match'"+results.get(i).title+"'" + " " + index);
         // If we have not found any other matches yet
         if(index == -1) {
           // Set the search index to this index
@@ -71,5 +76,42 @@ public class MALSearchResults {
     }
     // Return the search index.
     return index;
+  }
+  protected class MALSearchResult {
+    protected String title;
+    protected String id;
+    protected String type;
+    protected String imageUrl;
+    public String chapter;
+    public MALSearchResult(String title, String id, String type, String imageUrl) {
+      this.title = title;
+      this.id = id;
+      this.type = type;
+      this.imageUrl = imageUrl;
+    }
+    public String getTitle() {
+      return title;
+    }
+    public String getId() {
+      return id;
+    }
+    public String getImage() {
+      return imageUrl;
+    }
+    public String getType() {
+      return type;
+    }
+    @Override
+    public boolean equals(Object o) {
+      if(o instanceof String) {
+        String s = (String) o;
+        return s.equalsIgnoreCase(title);
+      } else if (o instanceof MALSearchResult) {
+        MALSearchResult m = (MALSearchResult) o;
+        return m.title.equalsIgnoreCase(title);
+      } else {
+        return o.toString().equalsIgnoreCase(title);
+      }
+    }
   }
 }

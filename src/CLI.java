@@ -77,17 +77,18 @@ public class CLI extends UserInterface {
     System.out.println("Could not find a perfect match withfor the manga: " + search.getQueryString());
     System.out.println("Please select one of the options from this list:");
     for(int i = 0; i < search.size(); i++) {
-      System.out.format("[%d] %s (%s)", i, search.getTitle(i), search.getType(i));
+      MALSearchResults.MALSearchResult malsr = search.get(i);
+      System.out.format("[%d] %s (%s)", i, malsr.getTitle(), malsr.getType());
       System.out.println();
     }
     System.out.println("Input the number of the correct manga. Input '-1' to skip");
   }
-  protected void displayProcessed(MWItem it) {
-    System.out.format("Processed %s", it.toString());
+  protected void displayProcessed(MALSearchResults.MALSearchResult it) {
+    System.out.format("Processed %s: %s", it.getTitle(), it.chapter);
     System.out.println();
   }
-  protected void displayDropped(MWItem it) {
-    System.out.format("---DROPPED %s", it.toString());
+  protected void displayDropped(MALSearchResults.MALSearchResult it) {
+    System.out.format("---DROPPED %s", it.getTitle());
     System.out.println();
   }
   public void registerController(Controller c) {
@@ -120,11 +121,11 @@ public class CLI extends UserInterface {
           break;
         }
         case ITEM_PROCESSED: {
-          displayProcessed((MWItem) ce.getData());
+          displayProcessed((MALSearchResults.MALSearchResult) ce.getData());
           break;
         }
         case ITEM_DROPPED: {
-          displayDropped((MWItem) ce.getData());
+          displayDropped((MALSearchResults.MALSearchResult) ce.getData());
           break;
         }
         case DONE_PROCESSING: {

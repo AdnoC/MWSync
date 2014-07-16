@@ -46,7 +46,8 @@ public class MALClient {
       Node ndid = el1.getElementsByTagName("id").item(0);
       String nId = ndid.getTextContent();
       String nTy = el1.getElementsByTagName("type").item(0).getTextContent();
-      malSR.add(nTitle, nId, nTy);
+      String nIm = el1.getElementsByTagName("image").item(0).getTextContent();
+      malSR.add(nTitle, nId, nTy, nIm);
     }
     // Cache the query
     lastSearch = malSR;

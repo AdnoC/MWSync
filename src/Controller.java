@@ -30,7 +30,7 @@ public class Controller implements ControlListener {
    *  The event to propogate.
    */
   public void fireEvent(ControlEvent ae) {
-    //System.out.println("Controller event fired: " + ae.getMessage().name());
+    System.out.println("Controller event fired: " + ae.getMessage().name());
     EventDispatcher ed = new EventDispatcher(ae);
     (new Thread(ed)).start();
   }
