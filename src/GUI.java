@@ -165,7 +165,12 @@ public class GUI extends UserInterface {
     jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
     //final JOptionPane jop = new JOptionPane(null, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, buts, buts[0]);
-    final JOptionPane jop = new JOptionPane(jsp, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new String[]{"Cancel"});
+
+    //JLabel jl = new JLabel(mals.getQueryString());
+    //JPanel cont = new JPanel();
+    //cont.add(jl);
+    //cont.add(jsp);
+    final JOptionPane jop = new JOptionPane(jsp, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new String[]{"Not Found"});
     jop.setPreferredSize(new Dimension(600, 500));
     for(int i = 0; i < buts.length; i++) {
       final int val = i;
