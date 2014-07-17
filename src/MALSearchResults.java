@@ -47,12 +47,12 @@ public class MALSearchResults {
 
   /**
    * Searches for a title in this search results, matching ignoring case.
-   * @param title
-   *  The title to search for
-   * @return
+   * @param title The title to search for
+   * @return <pre>
    *  Returns the index of the title (index >= 0) on success.
    *  Returns -1 if there was no match.
    *  Returns -2 if there was multiple matches.
+   *  </pre>
    */
   public int getIdForTitle(String title) {
     title = processWord(title);

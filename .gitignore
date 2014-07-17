@@ -1,5 +1,6 @@
 *.class
-src/Config.java
+# Config is no longer just a place to store passwords locally
+#src/Config.java
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

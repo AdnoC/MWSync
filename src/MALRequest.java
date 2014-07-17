@@ -39,6 +39,8 @@ public class MALRequest {
    *   Verify account credentials
    */
 
+  // NOTE: I can probably just delete things inside problematic tags. If not, putting it
+  // inside a <![CDATA[  ]]> tag should work
   protected String requestURL;
   protected Map<String, String> params;
   protected RequestType type;
