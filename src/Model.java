@@ -57,7 +57,7 @@ public class Model {
 
       String title = it.getDecodedTitle();
       MALSearchResults malSearch = MALClient.searchMangas(title);
-      if(malSearch == null) {
+      if(malSearch == null || malSearch.size() == 0) {
         control.fireEvent(new ControlEvent(ControlAction.ITEM_DROPPED, it));
         continue;
       }
@@ -97,7 +97,7 @@ public class Model {
     String malId = malsr.getId();
     MALClient.addManga(malId);
     MALClient.updateManga(malId, String.valueOf(it.getChapter()));
-    malsr.chapter = String.valueOf(it.getChapter());
+    malsr.chapter = it.getChapter();
     ControlEvent ce = new ControlEvent(ControlAction.ITEM_PROCESSED, malsr);
     control.fireEvent(ce);
   }

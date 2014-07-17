@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 public class MWRequest {
 
-  protected int manga_offset = 0;
+  protected int manga_offset = 30;
   protected static String authString = "";
   protected static boolean[] auth = new boolean[2];
   public static void resetAuth() {

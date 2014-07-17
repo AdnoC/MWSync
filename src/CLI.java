@@ -84,11 +84,11 @@ public class CLI extends UserInterface {
     System.out.println("Input the number of the correct manga. Input '-1' to skip");
   }
   protected void displayProcessed(MangaItem it) {
-    System.out.format("Processed %s: %s", it.getTitle(), it.getChapter());
+    System.out.format("Processed %s: %s", it.getReadableTitle(), it.getChapter());
     System.out.println();
   }
   protected void displayDropped(MangaItem it) {
-    System.out.format("---DROPPED %s", it.getTitle());
+    System.out.format("---DROPPED %s", it.getReadableTitle());
     System.out.println();
   }
   public void registerController(Controller c) {

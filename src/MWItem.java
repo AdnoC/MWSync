@@ -52,6 +52,9 @@ public class MWItem implements MangaItem {
   public String getTitle() {
     return title;
   }
+  public String getReadableTitle() {
+    return decodedTitle;
+  }
   public String getDecodedTitle() {
     return decodedTitle;
   }

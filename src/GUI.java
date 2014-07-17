@@ -138,21 +138,35 @@ public class GUI extends UserInterface {
   }
   public void showSearch(MALSearchResults mals) {
     ArrayList<JButton> buttons = new ArrayList<JButton>();
+    final ArrayList<ItemPane> iPanes = new ArrayList<ItemPane>();
 
     for(int i = 0; i < mals.size(); i++) {
-      JComponent jc = ItemPane.newSearch(mals.get(i)).getContainer();;
+      ItemPane ip = ItemPane.newSearch(mals.get(i));
+      ip.resize(new Dimension(500, 250));
+      iPanes.add(ip);
+      JComponent jc = ip.getContainer();;
       if(jc instanceof JButton) {
         JButton but = (JButton) jc;
         buttons.add(but);
       }
     }
-    buttons.add(new JButton("Cancel"));
+    //buttons.add(new JButton("Cancel"));
 
 //(Component parentComponent, Object message, String title, int optionType, int messageType, Icon icon, Object[] options, Object initialValue)
                 //JOptionPane(Object message, int messageType, int optionType, Icon icon, Object[] options, Object initialValue)
 
     JButton[] buts = buttons.toArray(new JButton[buttons.size()]);
-    final JOptionPane jop = new JOptionPane(null, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, buts, buts[0]);
+    JPanel buttonPanel = new JPanel();
+    //buttonPanel.setPreferredSize(new Dimension(500, 500));
+    JScrollPane jsp = new JScrollPane(buttonPanel);
+    jsp.getVerticalScrollBar().setUnitIncrement(20);
+    //buttonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING));
+    //jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+    //final JOptionPane jop = new JOptionPane(null, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, buts, buts[0]);
+    final JOptionPane jop = new JOptionPane(jsp, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new String[]{"Cancel"});
+    jop.setPreferredSize(new Dimension(600, 500));
     for(int i = 0; i < buts.length; i++) {
       final int val = i;
       buts[i].addActionListener(new ActionListener() {
@@ -161,9 +175,15 @@ public class GUI extends UserInterface {
           jop.setValue(val);
         }
       });
+      JPanel jp = new JPanel();
+      jp.add(buts[i]);
+      buttonPanel.add(jp);
+      System.out.println("Added number " + i);
+      buttonPanel.validate();
     }
-    JDialog dialog = jop.createDialog(null, null);
+    final JDialog dialog = jop.createDialog(null, null);
     dialog.setVisible(true);
+
     Object ret = null;
     while((ret = jop.getValue()) == JOptionPane.UNINITIALIZED_VALUE) {
       try {
@@ -172,7 +192,12 @@ public class GUI extends UserInterface {
         // Do nothing
       }
     }
-    Integer index = (Integer) ret;
+    Integer index;
+    if(ret == null || ret instanceof String) {
+     index = -1;
+    } else {
+     index = (Integer) ret;
+    }
     System.out.println("Selected option: " + ret);
     controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, index));
     //int value = JOptionPane.showOptionDialog(

@@ -79,7 +79,7 @@ public class MALSearchResults {
     // Return the search index.
     return index;
   }
-  private static final Pattern UNDESIRABLES = Pattern.compile("[][(){},.;!?<>%]");
+  private static final Pattern UNDESIRABLES = Pattern.compile("[\\Q][(){},.;!?<>%\\E]");
   private static String processWord(String x) {
       return UNDESIRABLES.matcher(x).replaceAll("");
   }
@@ -96,6 +96,9 @@ public class MALSearchResults {
       this.id = id;
       this.type = type;
       this.imageUrl = imageUrl;
+    }
+    public String getReadableTitle() {
+      return title;
     }
     public String getTitle() {
       return title;
