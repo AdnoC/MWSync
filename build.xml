@@ -1,4 +1,4 @@
-<project name="MWTool" basedir="." default="main">
+<project name="MWSync" basedir="." default="main">
 
   <property name="lib.dir" value="libs"/>
   <property name="src.dir" value="src"/>
