@@ -96,17 +96,11 @@ public class MWRequest {
     try {
 
       String urlStr = "http://mangawatcher.org/pages/manga/mangas/get";
-      String data = "";
+      String data = MWRequest.authString;
       urlStr += "?";
-      String key1 = "login";
-      String val1 = Config.MW_USERNAME;
-      String key2 = "pass";
-      String val2 = Config.MW_PASSWORD;;
 
       // Construct data
       try {
-        data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
-        data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
         data += "&" + URLEncoder.encode("offset", "UTF-8") + "=" + offset;
       } catch(UnsupportedEncodingException uee) {
         uee.printStackTrace();
@@ -133,19 +127,9 @@ public class MWRequest {
   }
   public static JsonElement MWRequest(String url, HashMap<String, String> params) {
     url += "?";
-    String key1 = "login";
-    String val1 = Config.MW_USERNAME;
-    String key2 = "pass";
-    String val2 = Config.MW_PASSWORD;;
 
-    String data = "";
+    String data = MWRequest.authString;
     // Construct data
-    try {
-    data = URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(val1, "UTF-8");
-    data += "&" + URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(val2, "UTF-8");
-      } catch(UnsupportedEncodingException uee) {
-        uee.printStackTrace();
-      }
 
     for(Map.Entry<String, String> entry : params.entrySet()) {
       try {

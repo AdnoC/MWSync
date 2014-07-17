@@ -55,7 +55,6 @@ public class MALSearchResults {
    *  Returns -2 if there was multiple matches.
    */
   public int getIdForTitle(String title) {
-    System.out.println("Searching for '"+title+"'");
     title = processWord(title);
     // Initialize the search index as not found.
     int index = -1;
@@ -63,7 +62,6 @@ public class MALSearchResults {
     for(int i = 0; i < results.size(); i++) {
       // If the titles match
       if(results.get(i).equals(title)) {
-        System.out.println("Found match'"+results.get(i).title+"'" + " " + index);
         // If we have not found any other matches yet
         if(index == -1) {
           // Set the search index to this index

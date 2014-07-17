@@ -67,7 +67,6 @@ public class Model {
       }
       int index = malSearch.getIdForTitle(title);
 
-      System.out.println("INDEX: " + index);
       ControlEvent ce;
       if(index < 0) {
         ce = new ControlEvent(ControlAction.DISPLAY_SEARCH, malSearch);

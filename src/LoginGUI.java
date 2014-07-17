@@ -70,7 +70,6 @@ public class LoginGUI extends JPanel {
     if(option == 0) {
       user = userField.getText();
       pass = new String(passField.getPassword());
-      //System.out.println("Your password is: " + new String(pass));
     }
     return option;
   }

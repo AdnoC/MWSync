@@ -24,10 +24,7 @@ public class Main {
 
   public static void main(String[] args) {
     //test();
-    //System.out.println(System.in);
     new Main();
-    //System.out.println(System.console() == null);
-    //new CLI();
   }
 
   public Main() {

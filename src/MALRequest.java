@@ -414,8 +414,6 @@ public class MALRequest {
               Document dom = dbuilder.parse(is);
               this.document = dom;
             } catch(SAXException saxe2) {
-              System.out.println("DOC: " + req);
-              System.out.println("DOCLEN: " + req.length());
               saxe2.printStackTrace();
             }
           } catch(IOException ioe) {
@@ -441,7 +439,6 @@ public class MALRequest {
       //urlStr += "?" + data;
     //}
     String urlStr = getRequestURL();
-    System.out.println("URL: " + urlStr);
 
     // Send data
     try{
@@ -452,7 +449,6 @@ public class MALRequest {
         addAuth(conn);
         conn.setDoOutput(true);
         int rCode = conn.getResponseCode();
-        System.out.println("CODE: " + rCode);
 
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
@@ -467,6 +463,8 @@ public class MALRequest {
 
       } catch(IOException ioe) {
         ioe.printStackTrace();
+        System.err.print("NOTE: MAL returns 501 when trying to add an item");
+        System.err.println(" that is already in one's list.");
       }
     } catch(MalformedURLException mue) {
       mue.printStackTrace();
@@ -487,6 +485,7 @@ public class MALRequest {
     uc.setRequestProperty("Authorization", basicAuth);
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
     //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+    // I got on the whitelist! woohoo!
     uc.setRequestProperty("http.agent", "MWSync");
   }
 

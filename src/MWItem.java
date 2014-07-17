@@ -81,8 +81,6 @@ public class MWItem implements MangaItem {
   protected int getChapterFromLink(String link) {
     //@TODO: Possibly map out what sites use what format and use different
     //  algorithm depending on site.
-    //System.out.println("Parsing " + link);
-    //System.out.println("Last char " + link.charAt(link.length() - 2));
     /*
      * chapter styles:
      * "http://www.mangaeden.com/en-manga/aragami-hime/2/1/"
@@ -106,7 +104,6 @@ public class MWItem implements MangaItem {
         for(int i = chLoc + CH_OFFSET; i < link.length(); i++) {
           if(! Character.isDigit(link.charAt(i))) {
             String chStr = link.substring(chLoc + CH_OFFSET, i);
-            //System.out.println("STR2: " + chStr);
             try {
               int chNum = Integer.parseInt(chStr);
               return chNum;
@@ -138,7 +135,6 @@ public class MWItem implements MangaItem {
         for(int i = chLoc + CHAPTER_OFFSET; i < link.length(); i++) {
           if(! Character.isDigit(link.charAt(i))) {
             String chStr = link.substring(chLoc + CHAPTER_OFFSET, i);
-              //System.out.println("STR1: " + chStr);
             try {
               int chNum = Integer.parseInt(chStr);
               return chNum;
@@ -175,7 +171,6 @@ public class MWItem implements MangaItem {
       for(int i = chLoc + CHAPTER_OFFSET; i < link.length(); i++) {
         if(! Character.isDigit(link.charAt(i))) {
           String chStr = link.substring(chLoc + CHAPTER_OFFSET, i);
-            //System.out.println("STR1: " + chStr);
           try {
             int chNum = Integer.parseInt(chStr);
             return chNum;
@@ -190,7 +185,6 @@ public class MWItem implements MangaItem {
         for(int i = chLoc + CH_OFFSET; i < link.length(); i++) {
           if(! Character.isDigit(link.charAt(i))) {
             String chStr = link.substring(chLoc + CH_OFFSET, i);
-            //System.out.println("STR2: " + chStr);
             try {
               int chNum = Integer.parseInt(chStr);
               return chNum;
@@ -203,7 +197,6 @@ public class MWItem implements MangaItem {
         int chEnd = link.lastIndexOf('/', link.length()-3);
         int chBegin = link.lastIndexOf('/', chEnd - 1)+1;
         String chStr = link.substring(chBegin, chEnd);
-        System.out.println("STR3: " + chStr);
         try {
           int chNum = Integer.parseInt(chStr);
           return chNum;

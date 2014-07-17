@@ -124,6 +124,7 @@ public class GUI extends UserInterface {
 
 
     frame.setSize(500, 500);
+    frame.setLocationRelativeTo(null);
     frame.setVisible(true);
   }
 
@@ -205,7 +206,6 @@ public class GUI extends UserInterface {
       JPanel jp = new JPanel();
       jp.add(buts[i]);
       buttonPanel.add(jp);
-      System.out.println("Added number " + i);
       buttonPanel.validate();
     }
     final JDialog dialog = jop.createDialog(null, null);
@@ -225,7 +225,6 @@ public class GUI extends UserInterface {
     } else {
      index = (Integer) ret;
     }
-    System.out.println("Selected option: " + ret);
     controls.fireEvent(new ControlEvent(ControlAction.SEARCH_RESULT_SELECTED, index));
     //int value = JOptionPane.showOptionDialog(
       //null,

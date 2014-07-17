@@ -3,7 +3,6 @@ import java.util.ArrayList;
 public class CLI extends UserInterface {
   protected Console console;
   protected boolean waitingForSearchInput;
-  // NOTE: '' is a platform-independant newline char when using System.out.println
   public CLI() {
     console = System.console();
     waitingForSearchInput = false;
