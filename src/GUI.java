@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-
 import java.util.ArrayList;
 public class GUI extends UserInterface {
   public static final int COMMON_SCROLLBAR_WIDTH = 15;
@@ -46,7 +45,7 @@ public class GUI extends UserInterface {
     frame.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent ce) {
         Dimension dim = new Dimension(frame.getWidth() - 3*COMMON_SCROLLBAR_WIDTH, frame.getHeight() / 4);
-        for(ItemPane ip : list) {
+        for(ItemPane ip : list.toArray(new ItemPane[list.size()])) {
           ip.resize(dim);
         }
       }
@@ -83,9 +82,33 @@ public class GUI extends UserInterface {
         promptLogin("MyAnimeList", ControlAction.MAL_LOGIN_INPUT);
       }
     });
+    //accountPanel.setPreferredSize(new Dimension(350, 50));
 
-    frame.add(accountPanel, BorderLayout.NORTH);
-    accountPanel.setPreferredSize(new Dimension(500, 100));
+    JPanel controlPanel = new JPanel();
+    controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+    frame.add(controlPanel, BorderLayout.NORTH);
+    controlPanel.add(accountPanel);
+
+    final JButton transferButton = new JButton("Begin Transfer");
+    transferButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent ae) {
+        ControlEvent ce;
+        if(transferButton.getActionCommand().equals("Start")) {
+          transferButton.setActionCommand("Stop");
+          transferButton.setText("Cancel");
+          ce = new ControlEvent(ControlAction.TRANSFER_MANGA);
+        } else {
+          transferButton.setActionCommand("Start");
+          transferButton.setText("Begin Transfer");
+          ce = new ControlEvent(ControlAction.STOP_TRANSFER);
+        }
+        controls.fireEvent(ce);
+      }
+    });
+    transferButton.setActionCommand("Start");
+    transferButton.setMinimumSize(new Dimension(125, 50));
+    controlPanel.add(transferButton);
+
 
 
     transferLog = new JPanel();
@@ -102,19 +125,18 @@ public class GUI extends UserInterface {
 
     frame.setSize(500, 500);
     frame.setVisible(true);
-    controls.fireEvent(new ControlEvent(ControlAction.TRANSFER_MANGA));
   }
 
   protected void displayLoginSuccess(String serviceName) {
-    // @TODO: Display a success message
+    JOptionPane.showMessageDialog(null, "You have successfully logged into " + serviceName);
   }
   protected void displayLoginFailure(String serviceName) {
-    // @TODO: Display a success message
+    JOptionPane.showMessageDialog(null, "Invalid username or password for " + serviceName);
   }
 
-  protected void promptLogin(String title, ControlAction act) {
-    if(login == null || login.getTitle().equals(title)) {
-      login = new LoginGUI(title);
+  protected void promptLogin(String serviceName, ControlAction act) {
+    if(login == null || ! login.getTitle().equals(serviceName)) {
+      login = new LoginGUI(serviceName);
     }
     int result = login.prompt();
     // If they filled in the forms
@@ -142,7 +164,7 @@ public class GUI extends UserInterface {
 
     for(int i = 0; i < mals.size(); i++) {
       ItemPane ip = ItemPane.newSearch(mals.get(i));
-      ip.resize(new Dimension(500, 250));
+      ip.getContainer().setPreferredSize(new Dimension(450, 250));
       iPanes.add(ip);
       JComponent jc = ip.getContainer();;
       if(jc instanceof JButton) {
@@ -166,12 +188,12 @@ public class GUI extends UserInterface {
     buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
     //final JOptionPane jop = new JOptionPane(null, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, buts, buts[0]);
 
-    //JLabel jl = new JLabel(mals.getQueryString());
-    //JPanel cont = new JPanel();
-    //cont.add(jl);
-    //cont.add(jsp);
-    final JOptionPane jop = new JOptionPane(jsp, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new String[]{"Not Found"});
-    jop.setPreferredSize(new Dimension(600, 500));
+    JLabel jl = new JLabel("Searching for: " + mals.getQueryString());
+    JPanel cont = new JPanel(new BorderLayout());
+    cont.add(jl, BorderLayout.NORTH);
+    cont.add(jsp, BorderLayout.CENTER);
+    final JOptionPane jop = new JOptionPane(cont, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_OPTION, null, new String[]{"Not Found"});
+    jop.setPreferredSize(new Dimension(500, 500));
     for(int i = 0; i < buts.length; i++) {
       final int val = i;
       buts[i].addActionListener(new ActionListener() {

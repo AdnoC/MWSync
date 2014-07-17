@@ -1,4 +1,5 @@
 import javax.swing.JPanel;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -29,9 +30,42 @@ public class LoginGUI extends JPanel {
   public int prompt() {
     passField.setText("");
     String[] options = new String[]{"OK", "Cancel"};
-    int option = JOptionPane.showOptionDialog(null, this, title,
-                             JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
-                             null, options, options[1]);
+    //int option = JOptionPane.showOptionDialog(null, this, title,
+                             //JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                             //null, options, options[0]);
+    JOptionPane jop = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.NO_OPTION, null, options, options[0]);
+    //jop.setPreferredSize(new Dimension(500, 500));
+    JDialog dialog = jop.createDialog(null, null);
+    dialog.setVisible(true);
+
+    // This doesn't work :( I have no idea how to have the user field grab focus 
+    //dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+      //@Override
+      //public void windowOpened(java.awt.event.WindowEvent e) {
+        //javax.swing.SwingUtilities.invokeLater(new Runnable() {
+          //@Override
+          //public void run() {
+            //userField.requestFocusInWindow();
+            //userField.requestFocus();
+            //userField.grabFocus();
+          //}
+        //});
+      //}
+    //});
+
+    Object ret = null;
+    while((ret = jop.getValue()) == JOptionPane.UNINITIALIZED_VALUE) {
+      try {
+        Thread.sleep(150);
+      } catch(InterruptedException ie) {
+        // Do nothing
+      }
+    }
+    int option = 1;
+    if(ret == options[0]) {
+      option = 0;
+    }
+
     // pressing OK button
     if(option == 0) {
       user = userField.getText();

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 public class Model {
   Controller control;
   protected TransferQueue queue;
+  protected boolean stopTransfer = false;
   public Model() {
     queue = null;
   }
@@ -46,6 +47,9 @@ public class Model {
     control.fireEvent(ce);
   }
   public void transferManga() {
+    if(stopTransfer) {
+      return ;
+    }
     if(!MWRequest.isAuthorized() || !MALRequest.isAuthorized()) {
       messageLoginStatus();
       return;
@@ -71,11 +75,15 @@ public class Model {
         return ;
       } else {
         MALSearchResults.MALSearchResult malsr = malSearch.get(index);
+        malsr.chapter = it.getChapter();
         String malId = malsr.getId();
         MALClient.addManga(malId);
         MALClient.updateManga(malId, String.valueOf(it.getChapter()));
         ce = new ControlEvent(ControlAction.ITEM_PROCESSED, malsr);
         control.fireEvent(ce);
+      }
+      if(stopTransfer) {
+        return ;
       }
     }
   }
@@ -117,6 +125,7 @@ public class Model {
             break;
           }
           case TRANSFER_MANGA: {
+            stopTransfer = false;
             transferManga();
             break;
           }
@@ -127,6 +136,10 @@ public class Model {
           }
           case LOGIN_STATUS: {
             messageLoginStatus();
+            break;
+          }
+          case STOP_TRANSFER: {
+            stopTransfer = true;
             break;
           }
         }

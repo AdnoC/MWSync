@@ -29,6 +29,8 @@
     MW_LOGIN_INPUT,
     // Begin transfering information from MW to MAL
     TRANSFER_MANGA,
+    // Stop transfering information from MW to MAL
+    STOP_TRANSFER,
     // A search result was chosen as a match, even if the result was nothing
     SEARCH_RESULT_SELECTED,
     // Message the status of both services login information

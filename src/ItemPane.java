@@ -20,23 +20,23 @@ public class ItemPane {
   protected JLabel name;
   public void resize(Dimension dim) {
     container.setPreferredSize(dim);
-    //Font labelFont = name.getFont();
-    //String labelText = name.getText();
+    Font labelFont = name.getFont();
+    String labelText = name.getText();
 
-    //int stringWidth = name.getFontMetrics(labelFont).stringWidth(labelText);
-    //int componentWidth = name.getWidth();
+    int stringWidth = name.getFontMetrics(labelFont).stringWidth(labelText);
+    int componentWidth = name.getWidth();
 
-    //// Find out how much the font can grow in width.
-    //double widthRatio = (double)componentWidth / (double)stringWidth;
+    // Find out how much the font can grow in width.
+    double widthRatio = (double)componentWidth / (double)stringWidth;
 
-    //int newFontSize = (int)(labelFont.getSize() * widthRatio);
-    //int componentHeight = name.getHeight();
+    int newFontSize = (int)(labelFont.getSize() * widthRatio);
+    int componentHeight = name.getHeight();
 
-    //// Pick a new font size so it will not be larger than the height of label.
-    //int fontSizeToUse = Math.min(newFontSize, componentHeight);
+    // Pick a new font size so it will not be larger than the height of label.
+    int fontSizeToUse = Math.min(newFontSize, componentHeight);
 
-    //// Set the label's font size to the newly determined size.
-    //name.setFont(new Font(labelFont.getName(), Font.PLAIN, fontSizeToUse - 3));
+    // Set the label's font size to the newly determined size.
+    name.setFont(new Font(labelFont.getName(), Font.PLAIN, fontSizeToUse - 3));
   }
 
 

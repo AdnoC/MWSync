@@ -38,15 +38,15 @@ public class Main {
     UserInterface ui = getUI();
     ui.registerController(control);
 
-    ArrayList<String> loginDets = new ArrayList<String>();
-    loginDets.add(Config.MW_USERNAME);
-    loginDets.add(Config.MW_PASSWORD_RAW);
-    control.fireEvent(new ControlEvent(ControlAction.MW_LOGIN_INPUT, loginDets));
+    //ArrayList<String> loginDets = new ArrayList<String>();
+    //loginDets.add(Config.MW_USERNAME);
+    //loginDets.add(Config.MW_PASSWORD_RAW);
+    //control.fireEvent(new ControlEvent(ControlAction.MW_LOGIN_INPUT, loginDets));
 
-    loginDets = new ArrayList<String>();
-    loginDets.add(Config.MAL_USERNAME);
-    loginDets.add(Config.MAL_PASSWORD);
-    control.fireEvent(new ControlEvent(ControlAction.MAL_LOGIN_INPUT, loginDets));
+    //loginDets = new ArrayList<String>();
+    //loginDets.add(Config.MAL_USERNAME);
+    //loginDets.add(Config.MAL_PASSWORD);
+    //control.fireEvent(new ControlEvent(ControlAction.MAL_LOGIN_INPUT, loginDets));
 
 
   }
@@ -56,7 +56,6 @@ public class Main {
    * @return a GUI or command line UI.
    */
   public UserInterface getUI() {
-    //@TODO: return valid ui objects after I make the classes.
     if(Utils.isGUI()) {
       return new GUI();
     } else {

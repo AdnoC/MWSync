@@ -65,7 +65,6 @@ public class MWItem implements MangaItem {
     return lastRead;
   }
   protected String stripString(String str) {
-    System.out.println("Pre-Strip: '" + str + "'");
     str = str.replaceAll("^\"|\"$", "");
     if(str.endsWith(",")) {
       str = str.substring(0, str.length() - 1);
