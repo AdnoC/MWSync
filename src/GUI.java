@@ -30,6 +30,7 @@ public class GUI extends UserInterface {
   protected JLabel malName;
   protected ArrayList<ItemPane> list;
 
+  protected JButton transferButton;
   protected JPanel transferLog;
 
   // @TODO: Have the login buttons change color. Default when starting. Red on login
@@ -89,7 +90,7 @@ public class GUI extends UserInterface {
     frame.add(controlPanel, BorderLayout.NORTH);
     controlPanel.add(accountPanel);
 
-    final JButton transferButton = new JButton("Begin Transfer");
+    transferButton = new JButton("Begin Transfer");
     transferButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         ControlEvent ce;
@@ -290,6 +291,11 @@ public class GUI extends UserInterface {
         case DISPLAY_SEARCH: {
           showSearch((MALSearchResults) ce.getData());
           break;
+        }
+        case DONE_PROCESSING: {
+          JOptionPane.showMessageDialog(null, "Done transfering.");
+          transferButton.setActionCommand("Start");
+          transferButton.setText("Begin Transfer");
         }
       }
     }
