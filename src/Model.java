@@ -57,7 +57,7 @@ public class Model {
       return ;
     }
     if(!MWRequest.isAuthorized() || !MALRequest.isAuthorized()) {
-      messageLoginStatus();
+      control.fireEvent(new ControlEvent(ControlAction.CANCEL_PROCESSING, null));
       return;
     }
     if(queue == null) {
@@ -118,6 +118,10 @@ public class Model {
         return ;
       }
     }
+    // As the previous loop runs either until we run out of MW items to process or
+    // we returned from it to let the user choose a search item, this will only be run after
+    // we finish.
+    control.fireEvent(new ControlEvent(ControlAction.DONE_PROCESSING));
   }
 
   public void addSearchResult(int index) {

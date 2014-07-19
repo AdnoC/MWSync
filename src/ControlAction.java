@@ -9,6 +9,8 @@
     ITEM_DROPPED,
     // Finished doing stuff so remove the progress bar/message and show completion message
     DONE_PROCESSING,
+    // Tell the user that we can't transfer yet (probably not logged in)
+    CANCEL_PROCESSING,
     // Prompt the user to input their MAL login details
     PROMPT_MAL_LOGIN,
     // Prompt the user to input ther MW login details

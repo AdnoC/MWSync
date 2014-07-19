@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
  * Data storage class that parses a Manga from MW API and stores its information.
  */
 public class MWItem implements MangaItem {
+  protected static final String IMAGE_URL = "http://s3.mangawatcher.org/images/mangas/200/";
 /*
    {
             "genre": ",3,5,7,19,25,29",
@@ -47,7 +48,7 @@ public class MWItem implements MangaItem {
   },
 */
   public String getImage() {
-    return image;
+    return IMAGE_URL + ihash;
   }
   public String getTitle() {
     return title;
@@ -243,7 +244,7 @@ public class MWItem implements MangaItem {
     // Be more careful with fields that have been problematic
     JsonElement tmpE = jso.get("ihash");
     if(tmpE != null) {
-      ihash = jso.get("ihash").toString();
+      ihash = stripString(jso.get("ihash").toString());
     } else {
       ihash = "";
     }

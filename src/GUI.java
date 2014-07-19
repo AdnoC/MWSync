@@ -295,6 +295,13 @@ public class GUI extends UserInterface {
           JOptionPane.showMessageDialog(null, "Done transfering.");
           transferButton.setActionCommand("Start");
           transferButton.setText("Begin Transfer");
+          break;
+        }
+        case CANCEL_PROCESSING: {
+          JOptionPane.showMessageDialog(null, "ERROR: Cannot begin transfering (Are you logged in?)");
+          transferButton.setActionCommand("Start");
+          transferButton.setText("Begin Transfer");
+          break;
         }
       }
     }

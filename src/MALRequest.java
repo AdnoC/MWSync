@@ -48,7 +48,9 @@ public class MALRequest {
   protected Document document;
   protected static boolean[] auth = new boolean[2];
   protected static String basicAuth = "";
-  private static final Pattern SYNOPSIS_MATCH = Pattern.compile("<synopsis>.*<\\/synopsis>");
+  // Matches the synopsis tag, any character repeated any number of times, then the end synopsis
+  // tag. Does a reluctant match for the things in between the two tags
+  private static final Pattern SYNOPSIS_MATCH = Pattern.compile("<synopsis>.*?<\\/synopsis>");
 
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH;

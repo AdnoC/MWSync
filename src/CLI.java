@@ -129,6 +129,12 @@ public class CLI extends UserInterface {
         }
         case DONE_PROCESSING: {
           System.out.println("Finished transfering mangas");
+          break;
+        }
+        case CANCEL_PROCESSING: {
+          System.out.println("ERROR: Cannot start transfering.");
+          System.out.println("(Are you logged in?)");
+          break;
         }
       }
     }
