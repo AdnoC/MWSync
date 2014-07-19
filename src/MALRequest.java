@@ -1,4 +1,5 @@
 import java.net.HttpURLConnection;
+import java.util.regex.Pattern;
 import org.xml.sax.InputSource;
 import java.nio.charset.Charset;
 import java.io.ByteArrayInputStream;
@@ -47,6 +48,7 @@ public class MALRequest {
   protected Document document;
   protected static boolean[] auth = new boolean[2];
   protected static String basicAuth = "";
+  private static final Pattern SYNOPSIS_MATCH = Pattern.compile("<synopsis>.*<\\/synopsis>");
 
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH;
@@ -136,8 +138,172 @@ public class MALRequest {
       return document;
     }
   }
+
+  public Document requestDocument(){
+    try{
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setValidating(false);
+        DocumentBuilder dbuilder = factory.newDocumentBuilder();
+        String req = request();
+        if(req == null || req.length() == 0 || req == "") {
+          return null;
+        }
+        req = removeSynopsis(req);
+        try {
+          // Fix simple xml entity errors
+          //req = req.replaceAll("&rsquo", "&amp;rsquo");
+          InputStream is = new ByteArrayInputStream(req.getBytes());
+          //InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
+          //is.setEncoding("UTF-8");
+          Document dom = dbuilder.parse(is);
+          this.document = dom;
+        } catch(SAXException saxe) {
+          // If we had a sax exception, replace all html entities and try parsing
+          // again. This will solve 99% of the problems.
+          // @TODO: Add handles for all html entities
+          //req = escapeHtmlEntities(req);
+          //try{
+            //InputStream is = new ByteArrayInputStream(req.getBytes());
+            //try{
+              //Document dom = dbuilder.parse(is);
+              //this.document = dom;
+            //} catch(SAXException saxe2) {
+              //saxe2.printStackTrace();
+            //}
+          //} catch(IOException ioe) {
+            //ioe.printStackTrace();
+          //}
+        } catch(IOException ioe) {
+        ioe.printStackTrace();
+      }
+    } catch(ParserConfigurationException pce) {
+      pce.printStackTrace();
+    }
+    return this.document;
+  }
+  public String request() throws BadRequestParamsException {
+    if(! canRequest()) {
+      ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
+      req.removeAll(params.keySet());
+      throw new BadRequestParamsException(req.toArray(new String[req.size()]));
+    }
+    //String urlStr = requestURL;
+    //if(params != null && !params.isEmpty()) {
+      //String data = Utils.buildParamsFromMap(params);
+      //urlStr += "?" + data;
+    //}
+    String urlStr = getRequestURL();
+
+    // Send data
+    try{
+      URL url = new URL(urlStr);
+      HttpURLConnection conn = null;
+      try {
+        conn = (HttpURLConnection) url.openConnection();
+        addAuth(conn);
+        conn.setDoOutput(true);
+        int rCode = conn.getResponseCode();
+        // MAL returns 501 if you try to add an item that is already in your list
+        if(rCode == 501 && type == RequestType.ADD) {
+          return "Already in list";
+        }
+
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+        StringBuilder builder = new StringBuilder();
+        String aux = "";
+          while ((aux = reader.readLine()) != null) {
+            builder.append(aux);
+        }
+
+        return builder.toString();
+
+
+      } catch(IOException ioe) {
+        ioe.printStackTrace();
+      }
+    } catch(MalformedURLException mue) {
+      mue.printStackTrace();
+    }
+    //@TODO: Make this return a value
+    return null;
+  }
+  public boolean canRequest() {
+    for(String param : this.type.requiredParams()) {
+      if(! params.containsKey(param)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected static void addAuth(URLConnection uc) {
+    uc.setRequestProperty("Authorization", basicAuth);
+    // Until MAL whitelists me, need to use chrome's user-agent for testing.
+    //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+    // I got on the whitelist! woohoo!
+    uc.setRequestProperty("http.agent", "MWSync");
+  }
+
+  public static void setAuth(String user, String pass) {
+    resetAuth();
+    String userpass = user + ":" + pass;
+    MALRequest.basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+  }
+
+  public static void resetAuth() {
+    MALRequest.auth = new boolean[2];
+  }
+
+  public static boolean isAuthorized() {
+    // Set a cache of whether we are authorized so we don't have to make multiple
+    // requests for authorization.
+    if(! MALRequest.auth[0]) {
+      int response = 401;
+      try{
+        String urlStr = RequestType.LOGIN.getURL();
+        URL url = new URL(urlStr);
+        try {
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          addAuth(conn);
+          conn.setDoOutput(true);
+
+          response = conn.getResponseCode();
+
+          conn.disconnect();
+        } catch(IOException ioe) {
+          ioe.printStackTrace();
+        }
+      } catch(MalformedURLException mue) {
+        mue.printStackTrace();
+      }
+
+      MALRequest.auth[0] = true;
+      MALRequest.auth[1] = response == 200;
+    }
+    return MALRequest.auth[1];
+  }
+
+  /**
+   * <pre>Removes the synopsis from MAL's xml.
+   * This is done since they do not escape it and it sometimes contains HTML
+   * entities that break the XML parser.</pre>
+   * @param x The string containing the response from the MAL query
+   * @return The response, but without any synopsii
+   */
+  private static String removeSynopsis(String x) {
+      return SYNOPSIS_MATCH.matcher(x).replaceAll("");
+  }
+
+  /**
+   * <pre>Escapes HTML entities in a string. No longer used since I now just get rid of the problematic
+   * area.</pre>
+   * @param str The string containing the response from the MAL query
+   * @return The response, but without any synopsii
+   */
   public String escapeHtmlEntities(String str) {
     // I feel like there must be a better way of doing this...
+    // EDIT: Fount one!
     str = str.replaceAll("&nbsp","&amp;nbsp"); // no-break space (non-breaking space)
     str = str.replaceAll("&iexcl","&amp;iexcl"); // inverted exclamation mark
     str = str.replaceAll("&cent","&amp;cent"); // cent sign
@@ -387,148 +553,5 @@ public class MALRequest {
     str = str.replaceAll("&hearts","&amp;hearts"); // black heart suit (valentine)
     str = str.replaceAll("&diams","&amp;diams"); // black diamond suit
     return str;
-  }
-  public Document requestDocument(){
-    try{
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setValidating(false);
-        DocumentBuilder dbuilder = factory.newDocumentBuilder();
-        String req = request();
-        if(req == null || req.length() == 0 || req == "") {
-          return null;
-        }
-        try {
-          // Fix simple xml entity errors
-          //req = req.replaceAll("&rsquo", "&amp;rsquo");
-          InputStream is = new ByteArrayInputStream(req.getBytes());
-          //InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
-          //is.setEncoding("UTF-8");
-          Document dom = dbuilder.parse(is);
-          this.document = dom;
-        } catch(SAXException saxe) {
-          // If we had a sax exception, replace all html entities and try parsing
-          // again. This will solve 99% of the problems.
-          // @TODO: Add handles for all html entities
-          req = escapeHtmlEntities(req);
-          try{
-            InputStream is = new ByteArrayInputStream(req.getBytes());
-            try{
-              Document dom = dbuilder.parse(is);
-              this.document = dom;
-            } catch(SAXException saxe2) {
-              saxe2.printStackTrace();
-            }
-          } catch(IOException ioe) {
-            ioe.printStackTrace();
-          }
-        } catch(IOException ioe) {
-        ioe.printStackTrace();
-      }
-    } catch(ParserConfigurationException pce) {
-      pce.printStackTrace();
-    }
-    return this.document;
-  }
-  public String request() throws BadRequestParamsException {
-    if(! canRequest()) {
-      ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
-      req.removeAll(params.keySet());
-      throw new BadRequestParamsException(req.toArray(new String[req.size()]));
-    }
-    //String urlStr = requestURL;
-    //if(params != null && !params.isEmpty()) {
-      //String data = Utils.buildParamsFromMap(params);
-      //urlStr += "?" + data;
-    //}
-    String urlStr = getRequestURL();
-
-    // Send data
-    try{
-      URL url = new URL(urlStr);
-      HttpURLConnection conn = null;
-      try {
-        conn = (HttpURLConnection) url.openConnection();
-        addAuth(conn);
-        conn.setDoOutput(true);
-        int rCode = conn.getResponseCode();
-        // MAL returns 501 if you try to add an item that is already in your list
-        if(rCode == 501 && type == RequestType.ADD) {
-          return "Already in list";
-        }
-
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-        StringBuilder builder = new StringBuilder();
-        String aux = "";
-          while ((aux = reader.readLine()) != null) {
-            builder.append(aux);
-        }
-
-        return builder.toString();
-
-
-      } catch(IOException ioe) {
-        ioe.printStackTrace();
-      }
-    } catch(MalformedURLException mue) {
-      mue.printStackTrace();
-    }
-    //@TODO: Make this return a value
-    return null;
-  }
-  public boolean canRequest() {
-    for(String param : this.type.requiredParams()) {
-      if(! params.containsKey(param)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  protected static void addAuth(URLConnection uc) {
-    uc.setRequestProperty("Authorization", basicAuth);
-    // Until MAL whitelists me, need to use chrome's user-agent for testing.
-    //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
-    // I got on the whitelist! woohoo!
-    uc.setRequestProperty("http.agent", "MWSync");
-  }
-
-  public static void setAuth(String user, String pass) {
-    resetAuth();
-    String userpass = user + ":" + pass;
-    MALRequest.basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-  }
-
-  public static void resetAuth() {
-    MALRequest.auth = new boolean[2];
-  }
-
-  public static boolean isAuthorized() {
-    // Set a cache of whether we are authorized so we don't have to make multiple
-    // requests for authorization.
-    if(! MALRequest.auth[0]) {
-      int response = 401;
-      try{
-        String urlStr = RequestType.LOGIN.getURL();
-        URL url = new URL(urlStr);
-        try {
-          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-          addAuth(conn);
-          conn.setDoOutput(true);
-
-          response = conn.getResponseCode();
-
-          conn.disconnect();
-        } catch(IOException ioe) {
-          ioe.printStackTrace();
-        }
-      } catch(MalformedURLException mue) {
-        mue.printStackTrace();
-      }
-
-      MALRequest.auth[0] = true;
-      MALRequest.auth[1] = response == 200;
-    }
-    return MALRequest.auth[1];
   }
 }

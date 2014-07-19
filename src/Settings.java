@@ -1,29 +1,34 @@
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
+//import java.io.ObjectOutputStream;
+//import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.OutputStream;
 import java.io.InputStream;
-//import java.io.BufferedInputStream;
-//import java.io.BufferedOutputStream;
+import java.nio.file.FileSystems;
 import java.io.IOException;
 import java.util.HashMap;
-
-
 import java.util.Properties;
+
 public class Settings {
-  public static final Settings SETTINGS = new Settings();
-  protected static final String CONFIG_NAME = "MW_SYNC_CONF";
+  private static final boolean isPosix =
+    FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+  protected static String CONFIG_NAME = "MW_MAL_Sync.conf";
   public static final String MAL_NAME = "MyAnimeList";
   public static final String MW_NAME = "MangaWatcher";
   protected static final String USER_STR = "Username";
+
+  public static final Settings SETTINGS = new Settings();
 
   protected Properties props;
   Path file;
 
   protected Settings() {
     props = new Properties();
+    // If this is POSIX, add a dot to make the file hidden
+    if(isPosix) {
+      CONFIG_NAME = "." + CONFIG_NAME;
+    }
     file = Paths.get(System.getProperty("user.home"), CONFIG_NAME);
     if(Files.exists(file)) {
       try (
@@ -47,6 +52,10 @@ public class Settings {
       OutputStream os = Files.newOutputStream(file);
     ){
       props.store(os, null);
+      // If we aren't Posix (ie Windows), set the hidden attribute to true
+      if(! isPosix) {
+        Files.setAttribute(file, "dos:hidden", true);
+      }
     } catch(IOException ioe) {
 
     }
@@ -59,7 +68,6 @@ public class Settings {
     return getName(MAL_NAME);
   }
   public String getName(String service) {
-System.out.println(props.getProperty(service + "." + USER_STR));
     return props.getProperty(service + "." + USER_STR, "");
   }
   public void setMALName(String name) {
@@ -80,7 +88,7 @@ System.out.println(props.getProperty(service + "." + USER_STR));
   }
 
 
-  public static void main(String[] args) {
+  //public static void main(String[] args) {
     //HashMap<String, String> map = new HashMap<String, String>();
     //map.put("a", "b");
     //map.put("b", "\n\\n");
@@ -111,5 +119,5 @@ System.out.println(props.getProperty(service + "." + USER_STR));
     //} catch(ClassNotFoundException cnfe) {
     //}
 
-  }
+  //}
 }
