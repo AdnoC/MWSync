@@ -47,7 +47,7 @@ public class MWItem implements MangaItem {
   },
 */
   public String getImage() {
-    return "";
+    return image;
   }
   public String getTitle() {
     return title;
@@ -63,6 +63,9 @@ public class MWItem implements MangaItem {
   }
   public int getLastRead() {
     return lastRead;
+  }
+  public String getHash() {
+    return mhash;
   }
   protected String stripString(String str) {
     str = str.replaceAll("^\"|\"$", "");

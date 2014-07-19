@@ -13,10 +13,11 @@ public class LoginGUI extends JPanel {
   JTextField userField;
   public LoginGUI(String title) {
     this.title = title;
-    user = null;
+    user = Settings.SETTINGS.getName(title);
     pass = null;
     JLabel uLabel = new JLabel("Username:");
     userField = new JTextField(10);
+    userField.setText(user);
     JLabel pLabel = new JLabel("Password: ");
     passField = new JPasswordField(10);
     this.add(uLabel);

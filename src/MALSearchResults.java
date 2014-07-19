@@ -45,6 +45,15 @@ public class MALSearchResults {
     return results.get(index);
   }
 
+  public int getIndexForId(String id) {
+    for(int i = 0; i < results.size(); i++) {
+      if(id.equals(results.get(i).getId())) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   /**
    * Searches for a title in this search results, matching ignoring case.
    * @param title The title to search for

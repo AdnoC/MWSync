@@ -451,6 +451,10 @@ public class MALRequest {
         addAuth(conn);
         conn.setDoOutput(true);
         int rCode = conn.getResponseCode();
+        // MAL returns 501 if you try to add an item that is already in your list
+        if(rCode == 501 && type == RequestType.ADD) {
+          return "Already in list";
+        }
 
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
@@ -465,8 +469,6 @@ public class MALRequest {
 
       } catch(IOException ioe) {
         ioe.printStackTrace();
-        System.err.print("NOTE: MAL returns 501 when trying to add an item");
-        System.err.println(" that is already in one's list.");
       }
     } catch(MalformedURLException mue) {
       mue.printStackTrace();

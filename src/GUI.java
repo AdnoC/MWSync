@@ -75,12 +75,12 @@ public class GUI extends UserInterface {
 
     mwButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
-        promptLogin("Manga Watcher", ControlAction.MW_LOGIN_INPUT);
+        promptLogin(Settings.MW_NAME, ControlAction.MW_LOGIN_INPUT);
       }
     });
     malButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
-        promptLogin("MyAnimeList", ControlAction.MAL_LOGIN_INPUT);
+        promptLogin(Settings.MAL_NAME, ControlAction.MAL_LOGIN_INPUT);
       }
     });
     //accountPanel.setPreferredSize(new Dimension(350, 50));
@@ -121,7 +121,6 @@ public class GUI extends UserInterface {
     jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     frame.add(jsp, BorderLayout.CENTER);
-
 
 
     frame.setSize(500, 500);
