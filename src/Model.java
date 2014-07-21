@@ -60,8 +60,16 @@ public class Model {
       control.fireEvent(new ControlEvent(ControlAction.CANCEL_PROCESSING, null));
       return;
     }
+    // If this is the first time we are starting the transfer...
     if(queue == null) {
+      // Make a new queue
       queue = new TransferQueue();
+      System.out.println("Getting list TM");
+      System.err.println("Getting list TM");
+      // And grab a list of the user's mangalist on MAL
+      MALClient.getList();
+    } else {
+      System.out.println("queue not null");
     }
     for(MWItem it : queue) {
       // Try to get the id quickly if we processed this once already
@@ -107,8 +115,8 @@ public class Model {
       }
 
       // Add the manga and set its chapter
-      MALClient.addManga(malId);
-      MALClient.updateManga(malId, String.valueOf(it.getChapter()));
+      addManga(malId, it);
+
       // Tell the user we proccessed the item
       ce = new ControlEvent(ControlAction.ITEM_PROCESSED, malsr);
       control.fireEvent(ce);
@@ -141,11 +149,21 @@ public class Model {
     MALSearchResults.MALSearchResult malsr = malSearch.get(index);
     String malId = malsr.getId();
     Settings.SETTINGS.mapMangaPair(it.getHash(), malId);
-    MALClient.addManga(malId);
-    MALClient.updateManga(malId, String.valueOf(it.getChapter()));
+
+    addManga(malId, it);
     malsr.chapter = it.getChapter();
     ControlEvent ce = new ControlEvent(ControlAction.ITEM_PROCESSED, malsr);
     control.fireEvent(ce);
+  }
+
+  protected void addManga(String malId, MangaItem mi) {
+    short up = MALClient.canUpsert(malId, mi);
+    if(up > 1) {
+      MALClient.addManga(malId);
+    }
+    if(up > 0) {
+      MALClient.updateManga(malId, String.valueOf(mi.getChapter()));
+    }
   }
 
   private class ModelControlListener implements ControlListener {

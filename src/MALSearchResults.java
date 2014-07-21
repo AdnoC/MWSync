@@ -15,13 +15,20 @@ public class MALSearchResults {
   }
 
   public void add(String title, String id, String type) {
-    add(title, id, type, "");
+    add(title, id, type, "", 0);
   }
 
   public void add(String title, String id, String type, String image) {
+    add(title, id, type, image, 0);
+  }
+
+  public void add(String title, String id, String type, String image, int chapter) {
     if(MALSearchResults.onlyMangas && type.equalsIgnoreCase("manga")) {
-      results.add(new MALSearchResult(title, id, type, image));
+      results.add(new MALSearchResult(title, id, type, image, chapter));
     }
+  }
+  public void add(String id, int chapter) {
+    add("", id, "manga", "", chapter);
   }
   public int size(){
     return results.size();
@@ -98,11 +105,15 @@ public class MALSearchResults {
     protected String imageUrl;
     public int chapter;
     public MALSearchResult(String title, String id, String type, String imageUrl) {
+      this(title, id, type, imageUrl, 0);
+    }
+    public MALSearchResult(String title, String id, String type, String imageUrl, int chapter) {
       this.title = title;
       this.matchingTitle = processWord(title);
       this.id = id;
       this.type = type;
       this.imageUrl = imageUrl;
+      this.chapter = chapter;
     }
     public String getReadableTitle() {
       return title;

@@ -4,6 +4,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 public class MALClient {
   protected static MALSearchResults lastSearch = null;
+  protected static MALSearchResults myList;
   protected static String lastSearchString;
   public static boolean updateManga(String id, String chapter) {
     addManga(id);
@@ -53,4 +54,47 @@ public class MALClient {
     return malSR;
   }
 
+  public static MALSearchResults getList() {
+    System.out.println("Getting list");
+    MALSearchResults malSR = new MALSearchResults("GET_LIST");
+    MALRequest malr = new MALRequest(MALRequest.RequestType.GET_LIST);
+    Document doc = malr.requestDocument();
+    if(doc == null) {
+      return null;
+    }
+    NodeList nl = doc.getElementsByTagName("manga");
+    for(int i = 0; i < nl.getLength(); i++) {
+      Element nd = (Element)nl.item(i);
+      String sId = nd.getElementsByTagName("series_mangadb_id").item(0).getTextContent();
+      String sChap = nd.getElementsByTagName("my_read_chapters").item(0).getTextContent();
+      int sChapInt = Integer.valueOf(sChap);
+
+      malSR.add(sId, sChapInt);
+    }
+    myList = MALClient.getList();
+    //DEBUG
+    System.out.println("LIST GOTTEN of size: " + myList.size());
+    return malSR;
+  }
+
+  /**
+   * Returns whether the manga should be upserted into MAL based on user's list
+   * @param malId The is of the manga to look for
+   * @return <pre> Returns a short with the following meaning:
+   *  0: The manga is up to date on MAL and nothing should be pushed.
+   *  1: The manga is in the list already, but the chapter # should be updated.
+   *  2: The manga is not in the list and should be added and updated.</pre>
+   */
+  public static short canUpsert(String malId, MangaItem mi) {
+    int index = myList.getIndexForId(malId);
+    // If the manga is not in the user's list
+    if(index == -1) {
+      return 2;
+    } else {
+      int listChap = myList.get(index).getChapter();
+      int miChap = mi.getChapter();
+      short ret = (short) (listChap < miChap ? 1 : 0);
+      return ret;
+    }
+  }
 }

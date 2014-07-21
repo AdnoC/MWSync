@@ -53,7 +53,7 @@ public class MALRequest {
   private static final Pattern SYNOPSIS_MATCH = Pattern.compile("<synopsis>.*?<\\/synopsis>");
 
   public enum RequestType {
-    LOGIN, ADD, UPDATE, SEARCH;
+    LOGIN, ADD, UPDATE, SEARCH, GET_LIST;
 
     protected String[] requiredParams() {
       switch(this) {
@@ -80,6 +80,10 @@ public class MALRequest {
           return "http://myanimelist.net/api/mangalist/update/id.xml";
         case SEARCH:
           return "http://myanimelist.net/api/manga/search.xml";
+        case GET_LIST:
+          String str = "http://myanimelist.net/malappinfo.php?status=all&type=manga&u=";
+          str += Settings.SETTINGS.getMALName();
+          return str;
         default:
           return "";
       }
@@ -90,6 +94,7 @@ public class MALRequest {
     this(RequestType.LOGIN);
   }
   public MALRequest(RequestType rType) {
+    System.out.println("MALREQ CONSTRUCT");
     setType(rType);
   }
 
@@ -185,6 +190,7 @@ public class MALRequest {
   }
   public String request() throws BadRequestParamsException {
     if(! canRequest()) {
+      System.out.println("CAN'T REQ");
       ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
       req.removeAll(params.keySet());
       throw new BadRequestParamsException(req.toArray(new String[req.size()]));
@@ -195,6 +201,8 @@ public class MALRequest {
       //urlStr += "?" + data;
     //}
     String urlStr = getRequestURL();
+    //DEBUG
+    System.out.println("URL STR: " + urlStr);
 
     // Send data
     try{
@@ -205,6 +213,8 @@ public class MALRequest {
         addAuth(conn);
         conn.setDoOutput(true);
         int rCode = conn.getResponseCode();
+        //DEBUG
+        System.out.println("CODE: " + rCode);
         // MAL returns 501 if you try to add an item that is already in your list
         if(rCode == 501 && type == RequestType.ADD) {
           return "Already in list";
@@ -218,6 +228,8 @@ public class MALRequest {
             builder.append(aux);
         }
 
+        //DEBUG
+        System.out.println("DOC: " + builder.toString());
         return builder.toString();
 
 
