@@ -211,10 +211,10 @@ public class MALRequest {
       try {
         conn = (HttpURLConnection) url.openConnection();
         addAuth(conn);
-        conn.setDoOutput(true);
+        //conn.setDoOutput(true);
         int rCode = conn.getResponseCode();
         //DEBUG
-        System.out.println("CODE: " + rCode);
+        System.out.println("MESS: " + conn.getResponseMessage());
         // MAL returns 501 if you try to add an item that is already in your list
         if(rCode == 501 && type == RequestType.ADD) {
           return "Already in list";
@@ -256,7 +256,9 @@ public class MALRequest {
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
     //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
     // I got on the whitelist! woohoo!
-    uc.setRequestProperty("http.agent", "MWSync");
+    //uc.setRequestProperty("http.agent", "MWSync");
+    // Apparently MAL wants me to use this user-agent
+    uc.setRequestProperty("http.agent", "api-indiv-0DE402D09B6DD58E021FCF8C977E51A7");
   }
 
   public static void setAuth(String user, String pass) {
