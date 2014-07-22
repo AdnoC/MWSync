@@ -307,7 +307,6 @@ public class MALRequest {
    * @param str The string containing the response from the MAL query
    * @return A string with all HTML entities escaped.
    */
-   */
   private static String escapeHTMLEntities(String x) {
       return HTML_ENTITIES.matcher(x).replaceAll("&amp;");
   }
