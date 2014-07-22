@@ -64,12 +64,8 @@ public class Model {
     if(queue == null) {
       // Make a new queue
       queue = new TransferQueue();
-      System.out.println("Getting list TM");
-      System.err.println("Getting list TM");
       // And grab a list of the user's mangalist on MAL
       MALClient.getList();
-    } else {
-      System.out.println("queue not null");
     }
     for(MWItem it : queue) {
       // Try to get the id quickly if we processed this once already

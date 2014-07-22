@@ -42,7 +42,6 @@ public class ItemPane {
 
   protected ItemPane(MangaItem malsr) {
     container = new JPanel(new BorderLayout());
-    System.out.println("IMAGE: " + malsr.getImage());
     try {
       URL url = new URL(malsr.getImage());
       ImageIcon ii = new ImageIcon(url);

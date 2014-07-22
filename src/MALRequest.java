@@ -1,4 +1,5 @@
 import java.net.HttpURLConnection;
+import java.util.zip.GZIPInputStream;
 import java.util.regex.Pattern;
 import org.xml.sax.InputSource;
 import java.nio.charset.Charset;
@@ -55,6 +56,22 @@ public class MALRequest {
   public enum RequestType {
     LOGIN, ADD, UPDATE, SEARCH, GET_LIST;
 
+    protected String getRequestType() {
+      switch(this) {
+        case LOGIN:
+          return "GET";
+        case ADD:
+          return "POST";
+        case UPDATE:
+          return "POST";
+        case SEARCH:
+          return "GET";
+        case GET_LIST:
+          return "POST";
+        default:
+          return "GET";
+      }
+    }
     protected String[] requiredParams() {
       switch(this) {
         case LOGIN:
@@ -94,7 +111,6 @@ public class MALRequest {
     this(RequestType.LOGIN);
   }
   public MALRequest(RequestType rType) {
-    System.out.println("MALREQ CONSTRUCT");
     setType(rType);
   }
 
@@ -157,11 +173,7 @@ public class MALRequest {
         }
         req = removeSynopsis(req);
         try {
-          // Fix simple xml entity errors
-          //req = req.replaceAll("&rsquo", "&amp;rsquo");
           InputStream is = new ByteArrayInputStream(req.getBytes());
-          //InputSource is = new InputSource(new ByteArrayInputStream(req.getBytes()));
-          //is.setEncoding("UTF-8");
           Document dom = dbuilder.parse(is);
           this.document = dom;
         } catch(SAXException saxe) {
@@ -190,7 +202,6 @@ public class MALRequest {
   }
   public String request() throws BadRequestParamsException {
     if(! canRequest()) {
-      System.out.println("CAN'T REQ");
       ArrayList<String> req = new ArrayList<String>(Arrays.asList(type.requiredParams()));
       req.removeAll(params.keySet());
       throw new BadRequestParamsException(req.toArray(new String[req.size()]));
@@ -201,8 +212,6 @@ public class MALRequest {
       //urlStr += "?" + data;
     //}
     String urlStr = getRequestURL();
-    //DEBUG
-    System.out.println("URL STR: " + urlStr);
 
     // Send data
     try{
@@ -210,27 +219,28 @@ public class MALRequest {
       HttpURLConnection conn = null;
       try {
         conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(this.type.getRequestType());
+        conn.setDoOutput(true);
+        //conn.setDoInput(true);
         addAuth(conn);
-        //conn.setDoOutput(true);
+        conn.setChunkedStreamingMode(-1);
         int rCode = conn.getResponseCode();
-        //DEBUG
-        System.out.println("MESS: " + conn.getResponseMessage());
         // MAL returns 501 if you try to add an item that is already in your list
         if(rCode == 501 && type == RequestType.ADD) {
+          conn.disconnect();
           return "Already in list";
         }
 
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-        StringBuilder builder = new StringBuilder();
-        String aux = "";
-          while ((aux = reader.readLine()) != null) {
-            builder.append(aux);
+        String str =null;
+        try(java.util.Scanner s = new java.util.Scanner(conn.getInputStream(), "UTF-8")) {
+          str =  s.useDelimiter("\\A").hasNext() ? s.next() : "";
         }
-
-        //DEBUG
-        System.out.println("DOC: " + builder.toString());
-        return builder.toString();
+        conn.disconnect();
+        if(this.type == RequestType.GET_LIST) {
+          str = new String(str.getBytes(), "UTF-8");
+        }
+        return str;
 
 
       } catch(IOException ioe) {
@@ -251,7 +261,7 @@ public class MALRequest {
     return true;
   }
 
-  protected static void addAuth(URLConnection uc) {
+  protected static void addAuth(HttpURLConnection uc) {
     uc.setRequestProperty("Authorization", basicAuth);
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
     //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
@@ -259,6 +269,8 @@ public class MALRequest {
     //uc.setRequestProperty("http.agent", "MWSync");
     // Apparently MAL wants me to use this user-agent
     uc.setRequestProperty("http.agent", "api-indiv-0DE402D09B6DD58E021FCF8C977E51A7");
+    // Set a cookie so that Incapsula doesn't complain when getting the user's list
+    uc.setRequestProperty("Cookie", "incap_ses_84_99025=3JyxGtdm/lCzPe1mM24qAS1VmFIAAAAFhg==; visid_incap_99025=x46CWDURpS3xoFKGL1L7mVhfVIAAAAAQAACA02dgARgGn7ZRUvYoE5BYkJZ8zgJhqWmP");
   }
 
   public static void setAuth(String user, String pass) {

@@ -55,9 +55,6 @@ public class MALClient {
   }
 
   public static MALSearchResults getList() {
-    MALRequest log = new MALRequest();
-    System.out.println("LOGIN REQ: " + log.request());
-    System.out.println("Getting list");
     MALSearchResults malSR = new MALSearchResults("GET_LIST");
     MALRequest malr = new MALRequest(MALRequest.RequestType.GET_LIST);
     Document doc = malr.requestDocument();
@@ -73,9 +70,7 @@ public class MALClient {
 
       malSR.add(sId, sChapInt);
     }
-    myList = MALClient.getList();
-    //DEBUG
-    System.out.println("LIST GOTTEN of size: " + myList.size());
+    myList = malSR;
     return malSR;
   }
 
