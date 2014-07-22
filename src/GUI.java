@@ -28,6 +28,7 @@ public class GUI extends UserInterface {
   protected LoginGUI login;
   protected JLabel mwName;
   protected JLabel malName;
+  protected JLabel messageLabel;
   protected ArrayList<ItemPane> list;
 
   protected JButton transferButton;
@@ -173,10 +174,6 @@ public class GUI extends UserInterface {
         buttons.add(but);
       }
     }
-    //buttons.add(new JButton("Cancel"));
-
-//(Component parentComponent, Object message, String title, int optionType, int messageType, Icon icon, Object[] options, Object initialValue)
-                //JOptionPane(Object message, int messageType, int optionType, Icon icon, Object[] options, Object initialValue)
 
     JButton[] buts = buttons.toArray(new JButton[buttons.size()]);
     JPanel buttonPanel = new JPanel();
@@ -200,6 +197,9 @@ public class GUI extends UserInterface {
       buts[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
+          if(messageLabel != null) {
+            transferLog.remove(messageLabel);
+          }
           jop.setValue(val);
         }
       });
@@ -271,7 +271,9 @@ public class GUI extends UserInterface {
           break;
         }
         case ITEM_PROCESSED: {
-                               //@TODO: when adding items, add them to the top
+          if(messageLabel != null) {
+            transferLog.remove(messageLabel);
+          }
           ItemPane ip = ItemPane.newSuccess((MangaItem) ce.getData());
           list.add(ip);
           // 0 supposedly makes it add in bottom-to-top order
@@ -280,6 +282,9 @@ public class GUI extends UserInterface {
           break;
         }
         case ITEM_DROPPED: {
+          if(messageLabel != null) {
+            transferLog.remove(messageLabel);
+          }
           ItemPane ip = ItemPane.newFailure((MangaItem) ce.getData());
           list.add(ip);
           // 0 supposedly makes it add in bottom-to-top order
@@ -288,6 +293,10 @@ public class GUI extends UserInterface {
           break;
         }
         case DISPLAY_SEARCH: {
+          if(messageLabel != null) {
+            transferLog.remove(messageLabel);
+            messageLabel.setText("<html>Found multiple possible matches for a manga.<br />Please select the correct option.</html>");
+          }
           showSearch((MALSearchResults) ce.getData());
           break;
         }
@@ -301,6 +310,16 @@ public class GUI extends UserInterface {
           JOptionPane.showMessageDialog(null, "ERROR: Cannot begin transfering (Are you logged in?)");
           transferButton.setActionCommand("Start");
           transferButton.setText("Begin Transfer");
+          break;
+        }
+        case BEGIN_LOADING_LIST: {
+          messageLabel = new JLabel("<html>Loading your manga list, please wait.<br />This may take a minute or two.</html>", SwingConstants.CENTER);
+          transferLog.add(messageLabel, 0);
+          transferLog.revalidate();
+          break;
+        }
+        case DONE_LOADING_LIST: {
+          messageLabel.setText("Your manga list has been loaded. Beginning transfer.");
           break;
         }
       }

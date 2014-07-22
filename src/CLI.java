@@ -40,6 +40,7 @@ public class CLI extends UserInterface {
         controls.fireEvent(new ControlEvent(ControlAction.LOGIN_STATUS, null));
       } else if(input.equalsIgnoreCase("start")) {
         controls.fireEvent(new ControlEvent(ControlAction.TRANSFER_MANGA, null));
+        System.out.println("Loading your manga list, please wait.");
       } else if(waitingForSearchInput && isInt(input)) {
         waitingForSearchInput = false;
         int index = Integer.parseInt(input);
@@ -134,6 +135,10 @@ public class CLI extends UserInterface {
         case CANCEL_PROCESSING: {
           System.out.println("ERROR: Cannot start transfering.");
           System.out.println("(Are you logged in?)");
+          break;
+        }
+        case DONE_LOADING_LIST: {
+          System.out.println("Your manga list has been loaded, beginning transfer.");
           break;
         }
       }

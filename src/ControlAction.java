@@ -23,6 +23,10 @@
     INCORRECT_MW_LOGIN,
     // Display a success message
     CORRECT_MW_LOGIN,
+    // Finished loading the user's MAL list
+    DONE_LOADING_LIST,
+    // Begin loading the user's MAL list
+    BEGIN_LOADING_LIST,
 
     // MODEL ACTION
     // Set username and password to values and verify they are valid

@@ -41,6 +41,7 @@ public class MALClient {
     for(int i = 0; i < nl.getLength(); i++) {
       Node nd = nl.item(i);
       String nTitle = nd.getTextContent();
+      System.out.println("TITLE: " + nTitle);
       Element el1 = (Element) nd.getParentNode();
       Node ndid = el1.getElementsByTagName("id").item(0);
       String nId = ndid.getTextContent();

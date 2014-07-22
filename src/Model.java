@@ -62,10 +62,12 @@ public class Model {
     }
     // If this is the first time we are starting the transfer...
     if(queue == null) {
+      control.fireEvent(new ControlEvent(ControlAction.BEGIN_LOADING_LIST));
       // Make a new queue
       queue = new TransferQueue();
       // And grab a list of the user's mangalist on MAL
       MALClient.getList();
+      control.fireEvent(new ControlEvent(ControlAction.DONE_LOADING_LIST));
     }
     for(MWItem it : queue) {
       // Try to get the id quickly if we processed this once already

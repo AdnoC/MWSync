@@ -57,6 +57,7 @@ public class MWRequest {
 
         MWRequest.auth[0] = true;
         MWRequest.auth[1] = response == 200;
+        conn.disconnect();
       } catch (Exception e) {
         System.err.println("Error");
         e.printStackTrace();
@@ -114,8 +115,13 @@ public class MWRequest {
 
       // Get the response
       JsonParser parser = new JsonParser();
-      InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-      ret = parser.parse(isr);
+      try(
+          InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+         ) {
+        ret = parser.parse(isr);
+      } catch (IOException ioe) {
+        ioe.printTraceStack();
+      }
     } catch (Exception e) {
       System.err.println("Error");
       e.printStackTrace();

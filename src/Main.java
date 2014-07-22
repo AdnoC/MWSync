@@ -28,12 +28,13 @@ public class Main {
   }
 
   public Main() {
-    //////MALRequest log = new MALRequest(MALRequest.RequestType.GET_LIST);
-    //////log.requestDocument();
-    ////MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
-    ////malr.addParam("q", "saki");
-    ////Document doc = malr.requestDocument();
-    //MALClient.getList();
+
+    ////////MALRequest log = new MALRequest(MALRequest.RequestType.GET_LIST);
+    ////////log.requestDocument();
+    //////MALRequest malr = new MALRequest(MALRequest.RequestType.SEARCH);
+    //////malr.addParam("q", "saki");
+    //////Document doc = malr.requestDocument();
+    ////MALClient.getList();
     //if(1==1) return;
     Controller control = new Controller();
     Model mod = new Model();
