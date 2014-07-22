@@ -10,6 +10,10 @@ To run:
 * Double click the jar to run it with a graphical user interface.
 * Run the jar from the command line to use a command line interface.
 
+To compile:
+* Download the repository.
+* Intall [Apache Ant](http://ant.apache.org/).
+* Run `ant build` in the repo directory to build the jar.
 
 ### Todo:
 * Clean up all the sloppy coding I did in terms of multi-threading
