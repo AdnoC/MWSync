@@ -35,6 +35,7 @@ public class MALClient {
     malr.addParam("q", title);
     Document doc = malr.requestDocument();
     if(doc == null) {
+      System.out.println("----- DOC NULL for " + title);
       return null;
     }
     NodeList nl = doc.getElementsByTagName("title");

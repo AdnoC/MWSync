@@ -65,7 +65,7 @@ public class MALRequest {
         case SEARCH:
           return "GET";
         case GET_LIST:
-          return "POST";
+          return "GET";
         default:
           return "GET";
       }
@@ -177,6 +177,7 @@ public class MALRequest {
           this.document = dom;
         } catch(SAXException saxe) {
           saxe.printStackTrace();
+          System.out.println(req);
         } catch(IOException ioe) {
           ioe.printStackTrace();
         }
@@ -211,9 +212,9 @@ public class MALRequest {
         conn.setDoOutput(true);
         //conn.setDoInput(true);
         addAuth(conn);
-        if(this.type == RequestType.GET_LIST) {
-          conn.setChunkedStreamingMode(-1);
-        }
+        /* if(this.type == RequestType.GET_LIST) { */
+        /*   conn.setChunkedStreamingMode(-1); */
+        /* } */
         int rCode = conn.getResponseCode();
         // MAL returns 501 if you try to add an item that is already in your list
         if(rCode == 501 && type == RequestType.ADD) {
@@ -254,13 +255,14 @@ public class MALRequest {
   protected static void addAuth(HttpURLConnection uc) {
     uc.setRequestProperty("Authorization", basicAuth);
     // Until MAL whitelists me, need to use chrome's user-agent for testing.
-    //uc.setRequestProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+    uc.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    uc.setRequestProperty("Accept-Language", "en");
     // I got on the whitelist! woohoo!
     //uc.setRequestProperty("http.agent", "MWSync");
     // Apparently MAL wants me to use this user-agent
     uc.setRequestProperty("http.agent", "api-indiv-0DE402D09B6DD58E021FCF8C977E51A7");
     // Set a cookie so that Incapsula doesn't complain when getting the user's list
-    uc.setRequestProperty("Cookie", "incap_ses_84_99025=3JyxGtdm/lCzPe1mM24qAS1VmFIAAAAFhg==; visid_incap_99025=x46CWDURpS3xoFKGL1L7mVhfVIAAAAAQAACA02dgARgGn7ZRUvYoE5BYkJZ8zgJhqWmP");
+    uc.setRequestProperty("Cookie", "incap_ses_133_81958=T2RyV+YSYTxv7IG654PYAZXZUFYAAAAAhX50qTghmxnoAXaUz9dp2A==; visid_incap_81958=OLUTI+d1RMm5Nwe1qrnRmMy8uVQAAAAAQUIPAAAAAABWdD0a4vqsjxQi2kXz7/JX; incap_ses_32_81958=6hZtEhHmeXZkHWvUKrBxAMj3U1YAAAAAtttCfwHFCUrsgBTaCK486A==");
   }
 
   public static void setAuth(String user, String pass) {
